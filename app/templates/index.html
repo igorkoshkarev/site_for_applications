@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт заявок</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="form-container">
+            <h1 class="title">Заявки</h1>
+            
+            <div class="input-group">
+                <input
+                    type="text"
+                    class="text-input"
+                    id="requestInput"
+                    placeholder="Введите вашу заявку..."
+                />
+                <button class="submit-btn" id="submitBtn">
+                    Отправить
+                </button>
+            </div>
+
+            <div class="submissions-container">
+                <h2 class="subtitle">Отправленные заявки</h2>
+                <div class="submissions-list" id="submissionsList">
+                    <p class="empty-text">Здесь будут отображаться ваши заявки</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

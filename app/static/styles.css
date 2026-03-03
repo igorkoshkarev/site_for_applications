@@ -1,0 +1,212 @@
+/* Сброс стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Основной контейнер */
+.page-container {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #FFB6D9 0%, #FFA8D8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Заголовок */
+.title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Группа ввода */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Поле ввода */
+.text-input {
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 18px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.text-input:focus {
+    border-color: white;
+    background: white;
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+}
+
+.text-input::placeholder {
+    color: #FFB6D9;
+}
+
+/* Кнопка отправки */
+.submit-btn {
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(255, 20, 147, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Контейнер заявок */
+.submissions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.subtitle {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    text-align: center;
+}
+
+/* Список заявок */
+.submissions-list {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Карточка заявки */
+.submission-card {
+    padding: 16px 20px;
+    background: white;
+    border: 2px solid #FFB6D9;
+    border-radius: 10px;
+    color: #333;
+    font-size: 16px;
+    word-wrap: break-word;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
+}
+
+/* Пустое сообщение */
+.empty-text {
+    color: #FFB6D9;
+    font-size: 16px;
+    font-style: italic;
+    text-align: center;
+    margin: auto;
+}
+
+/* Скроллбар */
+.submissions-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.submissions-list::-webkit-scrollbar-track {
+    background: rgba(255, 182, 217, 0.2);
+    border-radius: 10px;
+}
+
+.submissions-list::-webkit-scrollbar-thumb {
+    background: #FFB6D9;
+    border-radius: 10px;
+}
+
+.submissions-list::-webkit-scrollbar-thumb:hover {
+    background: #FF69B4;
+}
+
+/* Анимация появления заявки */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .title {
+        font-size: 36px;
+    }
+
+    .text-input {
+        font-size: 16px;
+        padding: 16px 20px;
+    }
+
+    .submit-btn {
+        font-size: 18px;
+        padding: 16px 20px;
+    }
+
+    .subtitle {
+        font-size: 20px;
+    }
+
+    .submission-card {
+        font-size: 14px;
+        padding: 14px 16px;
+    }
+}
