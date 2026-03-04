@@ -1,4 +1,4 @@
-import base
+import app.base as base
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import Text
 from enum import Enum
