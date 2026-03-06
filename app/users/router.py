@@ -6,6 +6,7 @@ from app.database import async_session_maker
 from app.users.models import User, Role
 from app.users.dao import DAORole, DAOUser
 from app.users.rb import RBRegistration, RBLogin
+from app.users.auth import get_password_hash
 
 
 router = APIRouter(prefix="/users", tags=["работа с пользователями"])
@@ -22,7 +23,7 @@ async def get_all_users():
 async def create_user(user_info: RBRegistration):
     async with async_session_maker() as session:
         username = user_info.username
-        password = user_info.password
+        password = get_password_hash(user_info.password)
         email = await user_info.email
         role = await DAORole.get_role_by_name(await user_info.role)
         user = User(username=username, password=password, email=email, role_id=role.id)
