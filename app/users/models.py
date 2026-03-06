@@ -6,6 +6,8 @@ from sqlalchemy import Text, ForeignKey
 class User(Base):
     id: Mapped[int_pk]
     username: Mapped[str] = mapped_column(Text, nullable=False)
+    password: Mapped[str]
+    email: Mapped[str]
     role_id: Mapped[int] = mapped_column(ForeignKey('roles.id'), nullable=False)
 
 

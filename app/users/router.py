@@ -22,8 +22,10 @@ async def get_all_users():
 async def create_user(user_info: RBRegistration):
     async with async_session_maker() as session:
         username = user_info.username
+        password = user_info.password
+        email = await user_info.email
         role = await DAORole.get_role_by_name(await user_info.role)
-        user = User(username=username, role_id=role.id)
+        user = User(username=username, password=password, email=email, role_id=role.id)
         session.add(user)
         await session.commit()
         return RedirectResponse('/users', status_code=301)
