@@ -25,3 +25,12 @@ class DAOUser:
             if not user:
                 raise ValueError('Вы пытаетесь получить пользователя, которого не существует')
             return user
+    
+    @classmethod
+    async def check_username_existance(cls, username: str):
+        try:
+            await cls.get_user_by_username(username)
+        except ValueError:
+            return False
+        else:
+            return True
