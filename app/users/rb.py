@@ -7,12 +7,12 @@ class RBRegistration(BaseModel):
     username: str
     email: EmailStr
     password: str
-    role: str = Field(default='Doctor')
+    role: str = Field(default='DOCTOR')
 
     @field_validator('role')
     @classmethod
     async def validate_role(cls, value: str) -> str:
-        role = await DAORole.get_role_by_name(value)
+        role = await DAORole.get_one(role=value)
         if not role:
             raise ValueError('Роль, которая выбрана для этого пользователя не существует.')
         return value

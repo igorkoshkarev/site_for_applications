@@ -8,16 +8,14 @@ class User(Base):
     username: Mapped[str] = mapped_column(Text, nullable=False)
     password: Mapped[str]
     email: Mapped[str]
-    role_id: Mapped[int] = mapped_column(ForeignKey('roles.id'), nullable=False)
+    role: Mapped[int] = mapped_column(ForeignKey('roles.role'), nullable=False)
 
 
 class Role(Base):
-    id: Mapped[int_pk]
-    role: Mapped[str]
+    role: Mapped[str] = mapped_column(primary_key=True, unique=True)
     law_create_applications: Mapped[bool]
     law_update_applications: Mapped[bool]
     law_delete_applications: Mapped[bool]
     law_create_users: Mapped[bool]
     law_update_users: Mapped[bool]
     law_delete_users: Mapped[bool]
-
