@@ -1,4 +1,4 @@
-from app.database import Base, int_pk
+from app.database import Base, int_pk, role_law
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import Text, ForeignKey
 
@@ -19,3 +19,8 @@ class Role(Base):
     law_create_users: Mapped[bool]
     law_update_users: Mapped[bool]
     law_delete_users: Mapped[bool]
+    law_show_inventory: Mapped[role_law]
+    law_add_inventory: Mapped[role_law]
+    law_use_inventory: Mapped[role_law]
+    law_delete_inventory: Mapped[role_law]
+

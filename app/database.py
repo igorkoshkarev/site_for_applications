@@ -4,6 +4,7 @@ from typing import Annotated
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
+from sqlalchemy.sql import expression
 
 from app.config import get_db_url
 
@@ -19,6 +20,8 @@ updated_at = Annotated[datetime, mapped_column(server_default=func.now(), onupda
 str_uniq = Annotated[str, mapped_column(unique=True, nullable=False)]
 str_null_true = Annotated[str, mapped_column(nullable=True)]
 deleted_at = Annotated[datetime, mapped_column(nullable=True, server_default=None)]
+role_law = Annotated[bool, mapped_column(nullable=False, server_default=expression.false())]
+
 
 class Base(AsyncAttrs, DeclarativeBase):
     __abstract__ = True
