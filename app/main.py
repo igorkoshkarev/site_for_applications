@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from app.users.router import router as user_router
 from app.applications.router import router as application_router
+from app.inventory.router import router as inventory_router
 
 
 main = FastAPI()
@@ -18,4 +19,5 @@ def main_page(request: Request):
 
 main.include_router(user_router)
 main.include_router(application_router)
+main.include_router(inventory_router)
 
