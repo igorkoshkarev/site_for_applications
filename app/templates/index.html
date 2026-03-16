@@ -3,31 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сайт заявок</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>Главная | Админ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #718096;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .admin-badge {
+            background: #667eea;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="page-container">
-        <div class="form-container">
-            <h1 class="title">Заявки</h1>
-            
-            <div class="input-group">
-                <input
-                    type="text"
-                    class="text-input"
-                    id="requestInput"
-                    placeholder="Введите вашу заявку..."
-                />
-                <button class="submit-btn" id="submitBtn">
-                    Отправить
-                </button>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Добро пожаловать на сайт поддержки</h1>
+            <p class="subtitle">Панель администратора</p>
+            <span class="admin-badge">Администратор</span>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Заявки</div>
+                <div class="card-desc">Просмотр, редактирование и назначение заявок</div>
             </div>
 
-            <div class="submissions-container">
-                <h2 class="subtitle">Отправленные заявки</h2>
-                <div class="submissions-list" id="submissionsList">
-                    <p class="empty-text">Здесь будут отображаться ваши заявки</p>
-                </div>
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Инвентарь</div>
+                <div class="card-desc">Управление оборудованием и расходниками</div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <div class="card-title">Пользователи</div>
+                <div class="card-desc">Список сотрудников и их профили</div>
             </div>
         </div>
     </div>

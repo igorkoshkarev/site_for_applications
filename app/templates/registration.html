@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация пользователя</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 40px;
+            padding: 48px 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 32px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+
+        .required::after {
+            content: " *";
+            color: #e53e3e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+        }
+
+        .password-hint {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 6px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .btn-register {
+            width: 100%;
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin: 24px 0 20px;
+        }
+
+        .btn-register:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(72,187,120,0.3);
+        }
+
+        .divider {
+            margin: 24px 0;
+            text-align: center;
+            color: #a0aec0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .import-section {
+            text-align: center;
+        }
+
+        .import-btn {
+            background: none;
+            border: 2px dashed #cbd5e0;
+            padding: 16px;
+            border-radius: 16px;
+            width: 100%;
+            color: #718096;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .import-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: #f7fafc;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .btn-cancel {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <a href="#" class="back-link">← Вернуться к списку пользователей</a>
+            
+            <h1>Регистрация нового пользователя</h1>
+            <p class="subtitle">Заполните информацию для создания учетной записи</p>
+
+            <form>
+                <div class="form-group">
+                    <label class="required">ФИО полностью</label>
+                    <input type="text" placeholder="Иванов Иван Иванович">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Email</label>
+                        <input type="email" placeholder="ivanov@company.ru">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" placeholder="+7 (999) 123-45-67">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Должность</label>
+                        <input type="text" placeholder="Системный администратор">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Кабинет</label>
+                        <input type="text" placeholder="Например: 111">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Роль</label>
+                    <select>
+                        <option value="user">Пользователь</option>
+                        <option value="admin">Администратор</option>
+                        <option value="manager">Менеджер</option>
+                        <option value="tech">Технический специалист</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Пароль</label>
+                        <input type="password" placeholder="Минимум 8 символов">
+                        <div class="password-hint">Минимум 8 символов, буквы и цифры</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Подтверждение</label>
+                        <input type="password" placeholder="Повторите пароль">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="send-invite" checked>
+                    <label for="send-invite">Отправить приглашение на email</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="require-pass-change">
+                    <label for="require-pass-change">Требовать смену пароля при первом входе</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-admin">
+                    <label for="notify-admin">Уведомить администратора о регистрации</label>
+                </div>
+
+                <button type="submit" class="btn-register">Зарегистрировать пользователя</button>
+
+                <div class="divider">или</div>
+
+                <div class="import-section">
+                    <button class="import-btn">
+                        <span>📎</span> Импортировать из CSV или Excel
+                    </button>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-cancel">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

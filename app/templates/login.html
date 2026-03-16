@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | Сайт поддержки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-4px);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .welcome-sub {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            margin-top: 16px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #e2e8f0;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+
+        .divider {
+            margin: 24px 0 8px;
+            color: #a0aec0;
+            font-size: 14px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Добро пожаловать</h1>
+        <p class="welcome-sub">на сайт поддержки</p>
+
+        <form>
+            <div class="input-group">
+                <label for="login">Логин</label>
+                <input type="text" id="login" placeholder="Введите логин" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" placeholder="Введите пароль">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Войти</button>
+            <button type="button" class="btn btn-secondary">Регистрация</button>
+        </form>
+        
+        <div class="divider">или войдите через корпоративный портал</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инвентарь</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            padding: 30px;
+        }
+
+        .app {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 32px;
+            background: white;
+            padding: 16px 30px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #667eea;
+        }
+
+        .account {
+            margin-left: auto;
+            background: #667eea;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 2;
+            min-width: 250px;
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn-search {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background: #5a67d8;
+        }
+
+        .inventory-grid {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #edf2f7;
+        }
+
+        .btn-add {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add:hover {
+            background: #38a169;
+            transform: scale(1.02);
+        }
+
+        .inventory-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #edf2f7;
+            transition: background 0.2s;
+            border-radius: 16px;
+        }
+
+        .inventory-item:hover {
+            background: #f7fafc;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .item-number {
+            font-weight: 700;
+            color: #667eea;
+            background: #e6e9ff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 18px;
+            color: #2d3748;
+        }
+
+        .item-status {
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-stock {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-used {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .status-empty {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f7fafc;
+            padding: 6px 12px;
+            border-radius: 40px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 20px;
+            border: none;
+            background: white;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .qty-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .qty-value {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="navbar">
+            <a href="#" class="nav-link">Главная</a>
+            <a href="#" class="nav-link">Заявки</a>
+            <a href="#" class="nav-link active">Инвентарь</a>
+            <a href="#" class="nav-link">Пользователи</a>
+            <span class="account">Аккаунт: Администратор</span>
+        </div>
+
+        <div class="header-section">
+            <h1>Инвентарь</h1>
+        </div>
+
+        <div class="search-section">
+            <input type="text" class="search-input" placeholder="Поиск по названию или номеру...">
+            <select class="filter-select">
+                <option value="all">Все статусы</option>
+                <option value="stock">На складе</option>
+                <option value="used">Используется</option>
+                <option value="empty">Закончился</option>
+            </select>
+            <button class="btn-search">Найти</button>
+        </div>
+
+        <div class="inventory-grid">
+            <div class="inventory-header">
+                <h3>Все предметы</h3>
+                <button class="btn-add">+ Добавить предмет</button>
+            </div>
+
+            <div class="inventory-item">
+                <div class="item-info">
+                    <span class="item-number">№ 456</span>
+                    <span class="item-name">Ethernet кабель</span>
+                </div>
+                <span class="item-status status-stock">На складе</span>
+            </div>
+
+            <div class="inventory-item">
+                <div class="item-info">
+                    <span class="item-number">№ 666</span>
+                    <span class="item-name">Мышь клавиатурная</span>
+                </div>
+                <span class="item-status status-used">Используется</span>
+            </div>
+
+            <div class="inventory-item">
+                <div class="item-info">
+                    <span class="item-number">№ 4</span>
+                    <span class="item-name">Тонер для принтера</span>
+                </div>
+                <span class="item-status status-stock">На складе</span>
+            </div>
+
+            <div class="inventory-item">
+                <div class="item-info">
+                    <span class="item-number">№ 67</span>
+                    <span class="item-name">Картриджи для принтера</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="item-status status-empty">Закончился</span>
+                    <div class="quantity-control">
+                        <button class="qty-btn">−</button>
+                        <span class="qty-value">3</span>
+                        <button class="qty-btn">+</button>
+                    </div>
+                    <button class="btn-save">Сохранить</button>
+                </div>
+            </div>
+
+            <div class="inventory-item">
+                <div class="item-info">
+                    <span class="item-number">№ 87</span>
+                    <span class="item-name">Стяжки для проводов</span>
+                </div>
+                <span class="item-status status-stock">На складе</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

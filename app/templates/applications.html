@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все заявки с поиском</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            padding: 30px;
+        }
+
+        .app {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 32px;
+            background: white;
+            padding: 16px 30px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-link.active {
+            color: #667eea;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 2;
+            min-width: 250px;
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+            background: white;
+            min-width: 150px;
+        }
+
+        .btn-search {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .active-filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .filter-tag {
+            background: #e6e9ff;
+            color: #667eea;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-tag button {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .ticket-table {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        }
+
+        .ticket-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .ticket-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ticket-id {
+            font-weight: 700;
+            color: #667eea;
+            background: #e6e9ff;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #2d3748;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 16px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-done {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-progress {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .pagination {
+            margin-top: 30px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .page-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="navbar">
+            <a href="#" class="nav-link">Главная</a>
+            <a href="#" class="nav-link active">Заявки</a>
+            <a href="#" class="nav-link">Инвентарь</a>
+            <a href="#" class="nav-link">Пользователи</a>
+        </div>
+
+        <div class="header-section">
+            <h1>Список заявок</h1>
+            <button class="btn-search" style="width: auto;">+ Новая заявка</button>
+        </div>
+
+        <div class="search-section">
+            <div class="search-row">
+                <input type="text" class="search-input" placeholder="Поиск по номеру, теме или описанию...">
+                <select class="filter-select">
+                    <option value="all">Все статусы</option>
+                    <option value="done">Выполнено</option>
+                    <option value="progress">В работе</option>
+                    <option value="new">Новая</option>
+                </select>
+                <select class="filter-select">
+                    <option value="all">Все кабинеты</option>
+                    <option value="111">Каб. 111</option>
+                    <option value="112">Каб. 112</option>
+                    <option value="113">Каб. 113</option>
+                </select>
+                <button class="btn-search">Применить</button>
+            </div>
+
+            <div class="active-filters">
+                <span class="filter-tag">
+                    Статус: В работе
+                    <button>×</button>
+                </span>
+                <span class="filter-tag">
+                    Кабинет: 112
+                    <button>×</button>
+                </span>
+                <span style="color: #718096; margin-left: auto;">Найдено: 12 заявок</span>
+            </div>
+        </div>
+
+        <div class="ticket-table">
+            <div class="ticket-row">
+                <div class="ticket-info">
+                    <span class="ticket-id">1</span>
+                    <div>
+                        <div class="ticket-title">Не работает принтер</div>
+                        <div class="ticket-meta">
+                            <span>Каб. 112</span>
+                            <span>Иванова И.И.</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="status status-done">Выполнено</span>
+            </div>
+
+            <div class="ticket-row">
+                <div class="ticket-info">
+                    <span class="ticket-id">2</span>
+                    <div>
+                        <div class="ticket-title">Не работает монитор</div>
+                        <div class="ticket-meta">
+                            <span>Каб. 111</span>
+                            <span>Петров П.П.</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="status status-progress">В работе</span>
+            </div>
+
+            <div class="ticket-row">
+                <div class="ticket-info">
+                    <span class="ticket-id">3</span>
+                    <div>
+                        <div class="ticket-title">Глючит мышка</div>
+                        <div class="ticket-meta">
+                            <span>Каб. 113</span>
+                            <span>Сидоров С.С.</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="status status-done">Выполнено</span>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button class="page-btn">←</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">→</button>
+        </div>
+    </div>
+</body>
+</html>
