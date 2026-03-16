@@ -217,65 +217,73 @@
 <body>
     <div class="register-container">
         <div class="register-card">
-            <a href="#" class="back-link">← Вернуться к списку пользователей</a>
+            <a href="{{ url_for('get_all_users') }}" class="back-link">← Вернуться к списку пользователей</a>
             
             <h1>Регистрация нового пользователя</h1>
             <p class="subtitle">Заполните информацию для создания учетной записи</p>
 
-            <form>
+            <form method="post" action="{{url_for('create_user')}}">
                 <div class="form-group">
                     <label class="required">ФИО полностью</label>
-                    <input type="text" placeholder="Иванов Иван Иванович">
+                    <input type="text" name="username" placeholder="Иванов Иван Иванович">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="required">Email</label>
-                        <input type="email" placeholder="ivanov@company.ru">
+                        <input type="email" name="email" placeholder="ivanov@company.ru">
                     </div>
 
                     <div class="form-group">
                         <label>Телефон</label>
-                        <input type="tel" placeholder="+7 (999) 123-45-67">
+                        <input type="tel" name="phone" placeholder="+7 (999) 123-45-67">
                     </div>
                 </div>
 
-                <div class="form-row">
+                <!-- <div class="form-row"> -->
                     <div class="form-group">
+                        <label class="required">Кабинет</label>
+                        <select name="cabinet">
+                            {% for cabinet in cabinets %}
+                                <option value={{ cabinet.name }}>{{ cabinet.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!-- <div class="form-group">
                         <label class="required">Должность</label>
                         <input type="text" placeholder="Системный администратор">
-                    </div>
+                    </div> -->
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label>Кабинет</label>
                         <input type="text" placeholder="Например: 111">
-                    </div>
-                </div>
+                    </div> -->
+                <!-- </div> -->
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label class="required">Роль</label>
-                    <select>
+                    <select name="role_name">
                         <option value="user">Пользователь</option>
                         <option value="admin">Администратор</option>
                         <option value="manager">Менеджер</option>
                         <option value="tech">Технический специалист</option>
                     </select>
-                </div>
+                </div> -->
 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="required">Пароль</label>
-                        <input type="password" placeholder="Минимум 8 символов">
+                        <input type="password" name="password" placeholder="Минимум 8 символов">
                         <div class="password-hint">Минимум 8 символов, буквы и цифры</div>
                     </div>
 
                     <div class="form-group">
                         <label class="required">Подтверждение</label>
-                        <input type="password" placeholder="Повторите пароль">
+                        <input type="password" name="verify_password" placeholder="Повторите пароль">
                     </div>
                 </div>
 
-                <div class="checkbox-group">
+                <!-- <div class="checkbox-group">
                     <input type="checkbox" id="send-invite" checked>
                     <label for="send-invite">Отправить приглашение на email</label>
                 </div>
@@ -288,21 +296,9 @@
                 <div class="checkbox-group">
                     <input type="checkbox" id="notify-admin">
                     <label for="notify-admin">Уведомить администратора о регистрации</label>
-                </div>
+                </div> -->
 
                 <button type="submit" class="btn-register">Зарегистрировать пользователя</button>
-
-                <div class="divider">или</div>
-
-                <div class="import-section">
-                    <button class="import-btn">
-                        <span>📎</span> Импортировать из CSV или Excel
-                    </button>
-                </div>
-
-                <div class="form-footer">
-                    <button type="button" class="btn-cancel">Отмена</button>
-                </div>
             </form>
         </div>
     </div>

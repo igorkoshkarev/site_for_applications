@@ -15,13 +15,14 @@ class Tool(Base):
     inventory_number: Mapped[str] = mapped_column(primary_key=True, unique=True)
     name: Mapped[str]
     status: Mapped[Status] = mapped_column(server_default=Status.in_storage)
-    storage_name: Mapped[str] = mapped_column(ForeignKey('storages.name'))
+    cabinet_name: Mapped[str] = mapped_column(ForeignKey('cabinets.name'))
 
-    storage = relationship('Storage', back_populates='inventory')
+    cabinet = relationship('Cabinet', back_populates='inventory')
 
 
-class Storage(Base):
+class Cabinet(Base):
     name: Mapped[str] = mapped_column(primary_key=True, unique=True)
+    description: Mapped[str]
     floor: Mapped[int]
 
-    inventory = relationship('Tool', back_populates='storage')
+    inventory = relationship('Tool', back_populates='cabinet')

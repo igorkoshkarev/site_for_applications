@@ -131,22 +131,20 @@
         <h1>Добро пожаловать</h1>
         <p class="welcome-sub">на сайт поддержки</p>
 
-        <form>
+        <form method="post" action="{{ url_for('login_user') }}">
             <div class="input-group">
                 <label for="login">Логин</label>
-                <input type="text" id="login" placeholder="Введите логин" autocomplete="off">
+                <input type="text" id="login" name="username" placeholder="Введите логин" autocomplete="off">
             </div>
 
             <div class="input-group">
                 <label for="password">Пароль</label>
-                <input type="password" id="password" placeholder="Введите пароль">
+                <input type="password" id="password" name="password" placeholder="Введите пароль">
             </div>
 
             <button type="submit" class="btn btn-primary">Войти</button>
-            <button type="button" class="btn btn-secondary">Регистрация</button>
         </form>
-        
-        <div class="divider">или войдите через корпоративный портал</div>
+            <a href="{{ url_for('registration_page') }}"><button type="button" class="btn btn-secondary">Регистрация</button></a>
     </div>
 </body>
 </html>

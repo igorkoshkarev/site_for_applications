@@ -1,21 +1,20 @@
 from pydantic import BaseModel, Field, field_validator, EmailStr
-from app.users.dao import DAORole
+from app.schemas import str_search_filter
+
+
+class UserSearchFilter(BaseModel):
+    name: str_search_filter
+    role_name: str_search_filter
+    cabinet: str_search_filter
 
 
 class RBRegistration(BaseModel):
-
     username: str
     email: EmailStr
+    phone: str
+    cabinet: str
     password: str
-    role: str = Field(default='DOCTOR')
-
-    @field_validator('role')
-    @classmethod
-    async def validate_role(cls, value: str) -> str:
-        role = await DAORole.get_one(role=value)
-        if not role:
-            raise ValueError('Роль, которая выбрана для этого пользователя не существует.')
-        return value
+    verify_password: str
 
 
 class RBLogin(BaseModel):

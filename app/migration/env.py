@@ -14,7 +14,7 @@ sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from app.database import DATABASE_URL, Base
 from app.users.models import User, Role
-from app.inventory.models import Tool, Storage, Status
+from app.inventory.models import Tool, Cabinet, Status
 from app.applications.models import Application
 
 

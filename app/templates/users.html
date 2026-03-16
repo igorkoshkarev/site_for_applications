@@ -304,35 +304,36 @@
 <body>
     <div class="app">
         <div class="navbar">
-            <a href="#" class="nav-link">Главная</a>
-            <a href="#" class="nav-link">Заявки</a>
-            <a href="#" class="nav-link">Инвентарь</a>
-            <a href="#" class="nav-link active">Пользователи</a>
+            <a href="{{ url_for('main_page') }}" class="nav-link">Главная</a>
+            <a href="{{ url_for('get_applications') }}" class="nav-link">Заявки</a>
+            <a href="{{ url_for('get_all_inventory') }}" class="nav-link">Инвентарь</a>
+            <a href="{{ url_for('get_all_users') }}" class="nav-link active">Пользователи</a>
             <span class="account">Аккаунт: Администратор</span>
         </div>
 
-        <div class="page-header">
+        <!-- <div class="page-header">
             <h1>Список пользователей</h1>
             <button class="btn-primary">+ Новый пользователь</button>
-        </div>
+        </div> -->
 
         <div class="search-section">
-            <input type="text" class="search-input" placeholder="Поиск по имени, должности или email...">
-            <select class="filter-select">
-                <option value="all">Все роли</option>
-                <option value="admin">Администраторы</option>
-                <option value="user">Пользователи</option>
-                <option value="manager">Менеджеры</option>
-                <option value="tech">Технические специалисты</option>
+            <form method="GET" action="{{ url_for('get_all_users').include_query_params(limit=pagination.limit, page=pagination.next_page) }}">
+            <input type="text" name="name" class="search-input" placeholder="Поиск по имени или email...">
+            <select class="filter-select" name="role_name">
+                <option value={{ None }}>Все роли</option>
+                {% for role in roles %}
+                    <option value={{ role.role }}>{{ role.russian_name }}</option>
+                {% endfor %}
             </select>
-            <select class="filter-select">
-                <option value="all">Все кабинеты</option>
-                <option value="101">Каб. 101</option>
-                <option value="111">Каб. 111</option>
-                <option value="112">Каб. 112</option>
-                <option value="113">Каб. 113</option>
+            <select class="filter-select" name="cabinet">
+                <option value={{ None }}>Все кабинеты</option>
+                {% for cabinet in cabinets %}
+                    <option value={{ cabinet.name }}>{{ cabinet.name }}</option>
+                {% endfor %}
             </select>
-            <button class="btn-search">Найти</button>
+            <button type='submit' class="btn-search">Найти</button>
+            </form>
+            <a href="{{ url_for('get_all_users') }}"><button class="btn-search">Сбросить</button></a>
         </div>
 
         <div class="users-list">
@@ -357,9 +358,9 @@
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span class="user-role {{ user.role.css_style_class }}">{{ user.role.russian_name }}</span>
                     <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
+                        <!--<a href="url_for('') "></a><button class="action-btn">✏️</button></a>-->
+                        <a href="{{ url_for('foreign_account', user_id=user.id) }}"><button class="action-btn">👤</button></a>
+                        <!-- <a><button class="action-btn">⋯</button></a> -->
                     </div>
                 </div>
             </div>
