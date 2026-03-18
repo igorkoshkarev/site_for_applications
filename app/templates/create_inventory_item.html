@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление инвентаря | Система управления</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1 1 calc(50% - 10px);
+            min-width: 250px;
+        }
+
+        .form-group.full-width {
+            flex: 1 1 100%;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background-color: #f9fafb;
+            transition: border-color 0.2s;
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: #9ca3af;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background-color: white;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+        }
+
+        .checkbox-item label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        .file-upload {
+            border: 2px dashed #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #f9fafb;
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .file-upload-text span {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4f46e5;
+            border: 2px solid #4f46e5;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f3ff;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .price-input {
+            position: relative;
+        }
+
+        .price-input input {
+            padding-right: 30px;
+        }
+
+        .price-input::after {
+            content: "₽";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        @media (max-width: 640px) {
+            .form-group {
+                flex: 1 1 100%;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .checkbox-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>📦 Добавление инвентаря</h1>
+                <p>Заполните информацию о новом оборудовании или материалах</p>
+            </div>
+            
+            <div class="form-container">
+                <form action="{{ url_for('create_inventory') }}" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Инвентарный номер</label>
+                            <input type="text" name="inventory_number" placeholder="INV-...">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="required">Название инвентаря</label>
+                            <input type="text" name="name" placeholder="Введите название оборудования" required>
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Категория</label>
+                            <select name="category" required>
+                                <option value="" disabled selected>Выберите категорию</option>
+                                <option value="electronics">📱 Электроника</option>
+                                <option value="furniture">🪑 Мебель</option>
+                                <option value="tools">🔧 Инструменты</option>
+                                <option value="office">📎 Офисные принадлежности</option>
+                                <option value="other">📦 Другое</option>
+                            </select>
+                        </div> -->
+<!-- 
+                        <div class="form-group">
+                            <label class="required">Количество</label>
+                            <input type="number" name="quantity" min="0" step="1" placeholder="0" required>
+                        </div> 
+                    </div> -->
+
+                    <!-- <div class="form-row">
+                        <div class="form-group">
+                            <label>Единица измерения</label>
+                            <select name="unit">
+                                <option value="pcs">Штуки</option>
+                                <option value="kg">Килограммы</option>
+                                <option value="liter">Литры</option>
+                                <option value="meter">Метры</option>
+                                <option value="box">Коробки</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Цена за единицу</label>
+                            <div class="price-input">
+                                <input type="number" name="price" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-row">
+                        <div class="form-group">
+                            <label>Статус</label>
+                            <select name="status">
+                                <option value="">✅ Доступно</option>
+                                <option value="low">⚠️ Мало</option>
+                                <option value="out">❌ Нет в наличии</option>
+                                <option value="ordered">🔄 Заказано</option>
+                            </select>
+                        </div>
+
+                         <div class="form-group">
+                            <label>Дата поступления</label>
+                            <input type="date" name="date">
+                        </div> 
+                    </div>-->
+
+                     <div class="form-row">
+                        <div class="form-group">
+                            <label>Местоположение</label>
+                            <select name="cabinet_name">
+                                {% for cabinet in cabinets %}
+                                    <option value="{{ cabinet.name }}">{{ cabinet.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+<!--
+                        <div class="form-group">
+                            <label>Производитель</label>
+                            <input type="text" name="manufacturer" placeholder="Бренд или производитель">
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-row">
+                        <div class="form-group">
+                            <label>Серийный номер</label>
+                            <input type="text" name="serial" placeholder="SN-...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Инвентарный номер</label>
+                            <input type="text" name="inventory_number" placeholder="INV-...">
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Дополнительные опции</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" name="warranty" value="yes" id="warranty">
+                                    <label for="warranty">На гарантии</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" name="need_service" value="yes" id="service">
+                                    <label for="service">Требует обслуживания</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" name="fragile" value="yes" id="fragile">
+                                    <label for="fragile">Хрупкое</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" name="dangerous" value="yes" id="dangerous">
+                                    <label for="dangerous">Опасный груз</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Фотография</label>
+                            <div class="file-upload">
+                                <div class="file-upload-text">
+                                    <span>Выберите файл</span> или перетащите его сюда
+                                </div>
+                                <div class="file-upload-text" style="font-size: 12px; margin-top: 8px;">
+                                    PNG, JPG, JPEG до 10MB
+                                </div>
+                                <input type="file" name="photo" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="info-text">Нажмите на поле выше для выбора файла</div>
+                        </div>
+                    </div> -->
+<!-- 
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Описание</label>
+                            <textarea name="description" placeholder="Введите подробное описание инвентаря..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Примечание</label>
+                            <input type="text" name="notes" placeholder="Дополнительная информация">
+                        </div>
+                    </div> -->
+
+                    <div class="button-group">
+                        <button type="reset" class="btn btn-secondary">Очистить</button>
+                        <button type="submit" class="btn btn-primary">Сохранить инвентарь</button>
+                        <a href="/inventory" class="btn btn-danger">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

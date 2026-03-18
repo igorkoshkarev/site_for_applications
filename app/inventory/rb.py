@@ -11,5 +11,5 @@ class InventorySearchFilter(BaseModel):
 class CreateInventoryRB(BaseModel):
     inventory_number: str
     name: str
-    status: Status
+    status: Status = Field(Status.in_storage)
     cabinet_name: str

@@ -17,6 +17,10 @@
             padding: 30px;
         }
 
+        a {
+            text-decoration: none;
+        }
+
         .app {
             max-width: 1000px;
             margin: 0 auto;
@@ -292,18 +296,26 @@
         <div class="inventory-grid">
             <div class="inventory-header">
                 <h3>Все предметы</h3>
-                <button class="btn-add">+ Добавить предмет</button>
+                <a href="{{ url_for('create_inventory_page') }}"><button class="btn-add">+ Добавить предмет</button></a>
             </div>
-
+            {% for item in inventory %}
             <div class="inventory-item">
+                <a href="{{ url_for('get_inventory_item', inventory_number=item.inventory_number) }}">
                 <div class="item-info">
-                    <span class="item-number">№ 456</span>
-                    <span class="item-name">Ethernet кабель</span>
+                    <span class="item-number">№ {{ item.inventory_number }}</span>
+                    <span class="item-name">{{ item.name }}</span>
                 </div>
-                <span class="item-status status-stock">На складе</span>
+            </a>
+                {% if item.status == status.in_storage %}
+                    <a href="{{ url_for('equip_inventory_item', inventory_number=item.inventory_number) }}"><span class="item-status status-stock">{{ item.status }}</span></a>
+                {% endif %}
+                {% if item.status == status.used %}
+                    <a href="{{ url_for('put_inventory_item', inventory_number=item.inventory_number) }}"><span class="item-status status-used">{{ item.status }}</span></a>
+                {% endif %}
             </div>
 
-            <div class="inventory-item">
+            {% endfor %}
+            <!-- <div class="inventory-item">
                 <div class="item-info">
                     <span class="item-number">№ 666</span>
                     <span class="item-name">Мышь клавиатурная</span>
@@ -341,7 +353,7 @@
                     <span class="item-name">Стяжки для проводов</span>
                 </div>
                 <span class="item-status status-stock">На складе</span>
-            </div>
+            </div> -->
         </div>
     </div>
 </body>

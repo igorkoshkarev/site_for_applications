@@ -1,12 +1,14 @@
-from sqlalchemy import select, inspect, or_, and_
+from sqlalchemy import select, inspect, or_, and_, update
 from sqlalchemy.orm import selectinload
 from app.database import async_session_maker
+from typing import Any
 
 
 class BaseDAO:
     model = None
 
     relationships = []
+    ID = None
 
     @classmethod
     async def get_one(cls, columns=[], **filter):
@@ -53,6 +55,13 @@ class BaseDAO:
         async with async_session_maker() as session:
             user = cls.model(**kwargs)
             session.add(user)
+            await session.commit()
+    
+    @classmethod
+    async def update_one(cls, item_id: str, **new_data):
+        async with async_session_maker() as session:
+            query = update(cls.model).where(cls.model.inventory_number == item_id).values(**new_data)
+            await session.execute(query)
             await session.commit()
     
     @classmethod

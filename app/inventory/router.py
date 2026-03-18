@@ -1,27 +1,80 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form
 from app.inventory.dao import DAOTool, DAOCabinet
 from fastapi.exceptions import HTTPException
 from app.schemas import Pagination
 from typing import Annotated
 from app.inventory.rb import InventorySearchFilter, CreateInventoryRB
 from sqlalchemy.orm import Session, joinedload
+from fastapi.templating import Jinja2Templates
+from fastapi.requests import Request
+from fastapi.responses import RedirectResponse
+from app.inventory.models import Status
 
 
 router = APIRouter(prefix='/inventory', tags=['работа с инвентарем'])
+templates = Jinja2Templates(directory='app/templates')
 
+@router.get('/item/{inventory_number}/equip', summary="Взять инвентарную вещь")
+async def equip_inventory_item(inventory_number: str):
+    await DAOTool.update_one(inventory_number, **{'status': Status.used})
+    #return {'or': True}
+    response = RedirectResponse('/inventory', status_code=302)
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+@router.get('/item/{inventory_number}/put', summary="Положить инвентарную вещь на склад")
+async def put_inventory_item(inventory_number: str):
+    await DAOTool.update_one(inventory_number, **{'status': Status.in_storage})
+    #return {'ok': True}
+    response = RedirectResponse('/inventory', status_code=302)
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 @router.get('/', summary="Получить весь инвентарь")
-async def get_all_inventory(pagination: Annotated[Pagination, Depends(Pagination)],
-                      filter: Annotated[InventorySearchFilter, Depends(InventorySearchFilter)]):
-    print(dict(filter))
-    return await DAOTool.get_all_with_limit(pagination.limit, pagination.offset, **dict(filter))
+async def get_all_inventory(request: Request,
+                    pagination: Annotated[Pagination, Depends()],
+                    filter: Annotated[InventorySearchFilter, Depends()]):
+    print(request.headers)
+    inventory = await DAOTool.get_all_with_limit(pagination.limit, pagination.get_offset(), **dict(filter))
+    return templates.TemplateResponse('inventory.html', {
+        'request': request,
+        'inventory': inventory,
+        'status': Status
+    })
+    return {'что': True}
+
+@router.get('/create', summary="Страница добавления инвентаря")
+async def create_inventory_page(request: Request):
+    cabinets = await DAOCabinet.get_all(columns=['name'])
+    return templates.TemplateResponse('create_inventory_item.html', {
+        'request': request,
+        'cabinets': cabinets,
+        'status': Status
+
+    })
+    if await DAOCabinet.check(name=inventory_info.cabinet_name):
+        await DAOTool.create(**dict(inventory_info))
+        return RedirectResponse('/inventory', status_code=301)
+    return HTTPException(status_code=401, detail="Вы неправильно вписали значения в форму.")
 
 
 @router.post('/create', summary="Добавить инвентарь")
-async def create_inventory(inventory_info: CreateInventoryRB):
-    print(dict(inventory_info))
+async def create_inventory(request: Request, inventory_info: Annotated[CreateInventoryRB, Form()]):
     if await DAOCabinet.check(name=inventory_info.cabinet_name):
         await DAOTool.create(**dict(inventory_info))
-        return {'ok': True}
+        return RedirectResponse('/inventory', status_code=301)
     return HTTPException(status_code=401, detail="Вы неправильно вписали значения в форму.")
+
+
+@router.get('/item/{inventory_number}', summary="Получить вещь из инвентаря")
+async def get_inventory_item(request: Request, inventory_number: str):
+    item = await DAOTool.get_one(inventory_number=inventory_number)
+    return templates.TemplateResponse('inventory_item.html', {
+        'request': request,
+        'item': item
+    })
 
