@@ -7,10 +7,6 @@ class ApplicationSearchFilter(BaseModel):
     title: Optional[str] = Field(None)
 
 
-class ApplicationPagination(Pagination):
-    ...
-
-
 class CreateApplicationRB(BaseModel):
     title: str
     description: str

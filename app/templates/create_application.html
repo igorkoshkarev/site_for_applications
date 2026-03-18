@@ -182,21 +182,16 @@
                 </div>
             </div>
 
-            <form>
+            <form method="post" action=" {{ url_for('create_application') }} ">
                 <div class="form-group">
                     <label class="required">Тема заявки</label>
-                    <input type="text" placeholder="Например: не работает принтер">
+                    <input type="text" name="title" placeholder="Например: не работает принтер">
                 </div>
 
                 <div class="form-group">
                     <label class="required">Описание проблемы</label>
-                    <textarea placeholder="Опишите вашу проблему подробнее..."></textarea>
+                    <textarea placeholder="Опишите вашу проблему подробнее..." name="description"></textarea>
                     <div class="hint">Укажите, что именно случилось и какие действия уже предприняли</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Кабинет (если отличается)</label>
-                    <input type="text" placeholder="Например: 112">
                 </div>
 
                 <button type="submit" class="btn-submit">ОТПРАВИТЬ ЗАЯВКУ</button>

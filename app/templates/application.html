@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заявка №1</title>
+    <title>Заявка №{{ application.id }}</title>
     <style>
         * {
             margin: 0;
@@ -128,10 +128,10 @@
         <div class="ticket-detail-card">
             <span class="status-badge">Статус: Выполнено</span>
 
-            <h2>Тема: сломался принтер</h2>
+            <h2>Тема: {{ application.title }}</h2>
 
             <div class="description">
-                <strong>Описание:</strong> принтер печатает слишком тускло и без нужных цветов
+                <strong>Описание:</strong> {{ application.description }}
             </div>
 
             <div class="info-grid">
@@ -141,7 +141,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Заявитель</span>
-                    <span class="info-value">Иванова И.И.</span>
+                    <span class="info-value">{{ application.user.username }}</span>
                 </div>
             </div>
         </div>

@@ -13,17 +13,14 @@ class DAORole(BaseDAO):
 
 class DAOUser(BaseDAO):
     model = User
-    relationships = [model.role]
+    relationships = [model.role, model.applications]
     
     @classmethod
     async def search_users(cls, limit, offset, **filter):
         filter = cls._clear_filter(**filter)
         async with async_session_maker() as session:
-            query = select(cls.model) \
-                .filter(await cls._create_user_search_condition(**filter)) \
-                .limit(limit) \
-                .offset(offset) \
-                .options(selectinload(*cls.relationships))
+            query = await cls._create_select_query()
+            query = query.filter(await cls._create_user_search_condition(**filter))
             result = await session.execute(query)
             result = result.scalars().all()
             if not result:

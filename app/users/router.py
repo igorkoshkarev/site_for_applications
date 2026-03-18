@@ -66,8 +66,10 @@ async def login_user(response: Response, user_info: Annotated[RBLogin, Form()]):
         user = await DAOUser.get_one(username=user_info.username)
         if verify_password(user_info.password, user.password):
             access_token = create_access_token({'sub': str(user.id)})
+            r = RedirectResponse(f'/users/{user.id}', status_code=301)
+            r.set_cookie(key="users_access_token", value=access_token, httponly=True)
             response.set_cookie(key="users_access_token", value=access_token, httponly=True)
-            return RedirectResponse(f'/users/{user.id}', status_code=301)
+            return r
 
 
 @router.get('/account', summary="Профиль пользователя")

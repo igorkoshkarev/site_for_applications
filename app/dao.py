@@ -60,7 +60,7 @@ class BaseDAO:
         query = select(cls.model) \
                 .filter(await cls._create_search_condition(**filter))
         if cls.relationships:
-            query = query.options(selectinload(*cls.relationships))
+            query = query.options(*[selectinload(r) for r in cls.relationships])
         return query
     
     @classmethod

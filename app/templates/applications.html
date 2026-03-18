@@ -11,7 +11,9 @@
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
         }
-
+        a {
+            text-decoration: none;
+        }
         body {
             background: #f5f7fb;
             padding: 30px;
@@ -244,12 +246,12 @@
         <div class="search-section">
             <div class="search-row">
                 <input type="text" class="search-input" placeholder="Поиск по номеру, теме или описанию...">
-                <select class="filter-select">
+                <!-- <select class="filter-select">
                     <option value="all">Все статусы</option>
                     <option value="done">Выполнено</option>
                     <option value="progress">В работе</option>
                     <option value="new">Новая</option>
-                </select>
+                </select> -->
                 <select class="filter-select">
                     <option value="all">Все кабинеты</option>
                     <option value="111">Каб. 111</option>
@@ -259,7 +261,7 @@
                 <button class="btn-search">Применить</button>
             </div>
 
-            <div class="active-filters">
+            <!-- <div class="active-filters">
                 <span class="filter-tag">
                     Статус: В работе
                     <button>×</button>
@@ -269,25 +271,29 @@
                     <button>×</button>
                 </span>
                 <span style="color: #718096; margin-left: auto;">Найдено: 12 заявок</span>
-            </div>
+            </div> -->
         </div>
 
         <div class="ticket-table">
-            <div class="ticket-row">
-                <div class="ticket-info">
-                    <span class="ticket-id">1</span>
-                    <div>
-                        <div class="ticket-title">Не работает принтер</div>
-                        <div class="ticket-meta">
-                            <span>Каб. 112</span>
-                            <span>Иванова И.И.</span>
+            {% for application in applications %}
+            <a href="{{ url_for('get_application', application_id=application.id) }}">
+                <div class="ticket-row">
+                    <div class="ticket-info">
+                        <span class="ticket-id">{{ application.id }}</span>
+                        <div>
+                            <div class="ticket-title">{{ application.title }}</div>
+                            <div class="ticket-meta">
+                                <span>{{ application.user.cabinet }}</span>
+                                <span>{{ application.user.username }}</span>
+                            </div>
                         </div>
                     </div>
+                    <span class="status status-done">Выполнено</span>
                 </div>
-                <span class="status status-done">Выполнено</span>
-            </div>
+            </a>
+            {% endfor %}
 
-            <div class="ticket-row">
+            <!-- <div class="ticket-row">
                 <div class="ticket-info">
                     <span class="ticket-id">2</span>
                     <div>
@@ -313,7 +319,7 @@
                     </div>
                 </div>
                 <span class="status status-done">Выполнено</span>
-            </div>
+            </div> -->
         </div>
 
         <div class="pagination">
