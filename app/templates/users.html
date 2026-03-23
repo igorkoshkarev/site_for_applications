@@ -492,18 +492,7 @@
             </div>
         </div> -->
 
-        <div class="pagination">
-            <a href="{{ url_for('get_all_users').include_query_params(limit=pagination.limit, page=pagination.prev_page) }}">
-                <button class="page-btn">←</button>
-            </a>
-            <!-- <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">4</button> -->
-            <a href="{{ url_for('get_all_users').include_query_params(limit=pagination.limit, page=pagination.next_page) }}">
-                <button class="page-btn">→</button>
-            </a>
-        </div>
+        {% include "pagination.html" %}
     </div>
 </body>
 </html>
