@@ -1,4 +1,4 @@
-from sqlalchemy import select, inspect, or_, and_, update
+from sqlalchemy import select, inspect, or_, and_, update, func
 from sqlalchemy.orm import selectinload
 from app.database import async_session_maker
 from typing import Any
@@ -17,7 +17,9 @@ class BaseDAO:
             query = await cls._create_select_query(**filter)
             result = await session.execute(query)
             result = result.scalar()
-            result = await cls._format_result(result, columns)
+            result = await cls._format_result([result], columns)
+            if result:
+                return result[0]
             return result
         
     @classmethod
@@ -49,7 +51,15 @@ class BaseDAO:
             return False
         else:
             return True
-        
+    
+    @classmethod
+    async def count(cls):
+        async with async_session_maker() as session:
+            query = select(func.count()).select_from(cls.model)
+            result = await session.execute(query)
+            result = result.scalar()
+            return result
+
     @classmethod
     async def create(cls, **kwargs):
         async with async_session_maker() as session:
@@ -78,7 +88,9 @@ class BaseDAO:
             raise ValueError(f'В модели {repr(cls.model)} нет таких строк.')
         if columns:
             return [{c: getattr(r, c) for c in columns} for r in result]
-        return result
+        else:
+            mapper = inspect(cls.model)
+            return [{c: getattr(r, c) for c, v in r.__dict__.items()} for r in result]
     
     @classmethod
     def _clear_filter(cls, **filter):

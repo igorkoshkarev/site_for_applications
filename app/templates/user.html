@@ -17,6 +17,10 @@
             padding: 30px;
         }
 
+        a {
+            text-decoration: none;
+        }
+
         .app {
             max-width: 900px;
             margin: 0 auto;
@@ -203,20 +207,20 @@
 
             <div class="profile-header">
                 <div class="photo-section">
-                    <div class="avatar-placeholder">{{ user.username[0].upper() }}</div>
+                    <div class="avatar-placeholder">{{ account.username[0].upper() }}</div>
                     <button class="btn-photo">Изменить фото</button>
                 </div>
 
                 <div class="info-fields">
                     <div class="field-row">
                         <span class="field-label">ФИО</span>
-                        <span class="field-value">{{ user.username }}</span>
+                        <span class="field-value">{{ account.username }}</span>
                         <button class="btn-edit">Изменить</button>
                     </div>
 
                     <div class="field-row">
                         <span class="field-label">Должность</span>
-                        <span class="field-value">{{ user.role.russian_name }}</span>
+                        <span class="field-value">{{ account.role.russian_name }}</span>
                         <button class="btn-edit">Изменить</button>
                     </div>
                 </div>
@@ -224,22 +228,17 @@
 
             <div class="tickets-section">
                 <div class="tickets-title">Заявки пользователя</div>
-
-                <div class="ticket-item">
-                    <div class="ticket-left">
-                        <span class="ticket-num">1</span>
-                        <span>Не работает принтер</span>
+                {% for a in user.applications %}
+                <a href="{{ url_for('get_application', application_id=a.id) }}">
+                    <div class="ticket-item">
+                        <div class="ticket-left">
+                            <span class="ticket-num">{{ a.id }}</span>
+                            <span>{{ a.title }}</span>
+                        </div>
+                        <span class="ticket-status status-done">Выполнено</span>
                     </div>
-                    <span class="ticket-status status-done">Выполнено</span>
-                </div>
-
-                <div class="ticket-item">
-                    <div class="ticket-left">
-                        <span class="ticket-num">2</span>
-                        <span>Не работает монитор</span>
-                    </div>
-                    <span class="ticket-status status-progress">В работе</span>
-                </div>
+                </a>
+                {% endfor %}
             </div>
         </div>
     </div>

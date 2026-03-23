@@ -24,9 +24,9 @@ class GetUserDataMiddleware(BaseHTTPMiddleware):
         user_id = get_user_id_from_token(request)
         user = None
         if user_id:
-            user = DAOUser.get_one(id=user_id)
+            user = await DAOUser.get_one(id=user_id)
         request.state.user = user
-        
+
         response = await call_next(request)
 
         return response

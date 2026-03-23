@@ -18,7 +18,10 @@ templates = Jinja2Templates(directory=str('app/templates'))
 
 @main.get("/", response_class=HTMLResponse)
 def main_page(request: Request):
-    return templates.TemplateResponse('index.html', {"request": request})
+    return templates.TemplateResponse('index.html', {
+        "request": request,
+        "user": request.state.user
+        })
 
 main.include_router(user_router)
 main.include_router(application_router)

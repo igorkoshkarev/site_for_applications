@@ -25,6 +25,7 @@ async def get_applications(
                                                       **dict(filter))
     return templates.TemplateResponse('applications.html', {
         'request': request,
+        'user': request.state.user,
         'applications': applications,
         'filter': filter,
         'pagination': pagination.get_context(len(applications)),
@@ -34,7 +35,8 @@ async def get_applications(
 @router.get('/create', summary='страница создания заявки')
 async def create_application_page(request: Request):
     return templates.TemplateResponse('create_application.html', {
-        'request': request
+        'request': request,
+        'user': request.state.user
     })
 
 
@@ -50,6 +52,7 @@ async def get_application(request: Request, application_id: int):
     application = await ApplicationsDAO.get_one(id=application_id)
     return templates.TemplateResponse('application.html', {
         'request': request,
+        'user': request.state.user,
         'application': application
     })
 

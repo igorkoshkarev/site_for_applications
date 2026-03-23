@@ -3,6 +3,7 @@ import datetime
 from datetime import timezone, timedelta
 from app.config import get_auth_data
 from jose import jwt
+from fastapi.requests import Request
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

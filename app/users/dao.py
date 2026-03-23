@@ -21,6 +21,7 @@ class DAOUser(BaseDAO):
         async with async_session_maker() as session:
             query = await cls._create_select_query()
             query = query.filter(await cls._create_user_search_condition(**filter))
+            query = query.limit(limit).offset(offset)
             result = await session.execute(query)
             result = result.scalars().all()
             if not result:

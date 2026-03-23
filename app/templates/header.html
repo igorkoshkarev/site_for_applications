@@ -3,5 +3,5 @@
     <a href="{{ url_for('get_applications') }}" class="nav-link">Заявки</a>
     <a href="{{ url_for('get_all_inventory') }}" class="nav-link">Инвентарь</a>
     <a href="{{ url_for('get_all_users') }}" class="nav-link active">Пользователи</a>
-    <span class="account">Аккаунт: Администратор</span>
+    <a href="{{ url_for('foreign_account', user_id=user.id) }}" class="nav-link active"><span class="account">Аккаунт: {{ user.username }}</span></a>
 </div>

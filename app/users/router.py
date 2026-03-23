@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, Query
+from fastapi import APIRouter, Depends, Form
 from fastapi.responses import RedirectResponse, Response
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
@@ -19,15 +19,18 @@ templates = Jinja2Templates(directory=str('app/templates'))
 
 @router.get('/', name="get_all_users", summary="Вывести список пользователей")
 async def get_all_users(request: Request, pagination: Annotated[PaginationModel, Depends()], filter: Annotated[UserSearchFilter, Depends()]):
-    
     users = await DAOUser.search_users(pagination.limit, pagination.get_offset(), username=filter.name, email=filter.name, role_name=filter.role_name, cabinet=filter.cabinet)
+    users_count = await DAOUser.count()
     roles = await DAORole.get_all(columns=['role', 'russian_name'])
     cabinets = await DAOCabinet.get_all(columns=['name'])
 
+    print(request.state.user)
+
     return templates.TemplateResponse('users.html', {
             'request': request,
+            'user': request.state.user,
             'users': users,
-            'pagination': pagination.get_context(len(users)),
+            'pagination': pagination.get_context(users_count),
             'roles': roles,
             'cabinets': cabinets
     })
@@ -43,7 +46,6 @@ async def registration_page(request: Request):
 
 @router.post('/registration', summary="Зарегистрировать пользователя")
 async def create_user(request: Request, user_info: Annotated[RBRegistration, Form()]):
-    print('hai')
     username = user_info.username
     password = get_password_hash(user_info.password)
     email = user_info.email
@@ -90,5 +92,6 @@ async def foreign_account(request: Request, user_id: int):
     user = await DAOUser.get_one(id=user_id)
     return templates.TemplateResponse('user.html', {
             'request': request,
-            'user': user
+            'user': request.state.user,
+            'account': user
     })

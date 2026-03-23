@@ -4,11 +4,10 @@ from fastapi.exceptions import HTTPException
 from app.schemas import PaginationModel
 from typing import Annotated
 from app.inventory.rb import InventorySearchFilter, CreateInventoryRB
-from sqlalchemy.orm import Session, joinedload
 from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from fastapi.responses import RedirectResponse
-from app.inventory.models import Status
+from app.inventory.models import ToolStatus
 
 
 router = APIRouter(prefix='/inventory', tags=['работа с инвентарем'])
@@ -16,7 +15,7 @@ templates = Jinja2Templates(directory='app/templates')
 
 @router.get('/item/{inventory_number}/equip', summary="Взять инвентарную вещь")
 async def equip_inventory_item(inventory_number: str):
-    await DAOTool.update_one(inventory_number, **{'status': Status.used})
+    await DAOTool.update_one(inventory_number, **{'status': ToolStatus.used})
     response = RedirectResponse('/inventory', status_code=302)
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
     response.headers["Pragma"] = "no-cache"
@@ -25,7 +24,7 @@ async def equip_inventory_item(inventory_number: str):
 
 @router.get('/item/{inventory_number}/put', summary="Положить инвентарную вещь на склад")
 async def put_inventory_item(inventory_number: str):
-    await DAOTool.update_one(inventory_number, **{'status': Status.in_storage})
+    await DAOTool.update_one(inventory_number, **{'status': ToolStatus.in_storage})
     response = RedirectResponse('/inventory', status_code=302)
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
     response.headers["Pragma"] = "no-cache"
@@ -41,7 +40,7 @@ async def get_all_inventory(request: Request,
         'user': request.state.user,
         'request': request,
         'inventory': inventory,
-        'status': Status
+        'status': ToolStatus
     })
 
 @router.get('/create', summary="Страница добавления инвентаря")
@@ -51,7 +50,7 @@ async def create_inventory_page(request: Request):
         'user': request.state.user,
         'request': request,
         'cabinets': cabinets,
-        'status': Status
+        'status': ToolStatus
 
     })
     if await DAOCabinet.check(name=inventory_info.cabinet_name):

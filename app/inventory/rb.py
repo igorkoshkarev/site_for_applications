@@ -1,15 +1,15 @@
 from pydantic import BaseModel, Field
-from app.inventory.models import Status
+from app.inventory.models import ToolStatus
 
 
 class InventorySearchFilter(BaseModel):
     name: str|None = Field(None)
-    status: Status|None = Field(None)
+    status: ToolStatus|None = Field(None)
     cabinet_name: str|None = Field(None)
 
 
 class CreateInventoryRB(BaseModel):
     inventory_number: str
     name: str
-    status: Status = Field(Status.in_storage)
+    status: ToolStatus = Field(ToolStatus.in_storage)
     cabinet_name: str
