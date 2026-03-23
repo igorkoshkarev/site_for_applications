@@ -20,4 +20,4 @@ class Application(database.Base):
     performer_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=True)
 
     user = relationship('User', foreign_keys=[user_id], back_populates='applications')
-    performer = relationship('User', foreign_keys=[performer_id], back_populates="preformed_applications")
+    performer = relationship('User', foreign_keys=[performer_id], back_populates="performed_applications")

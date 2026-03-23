@@ -1,5 +1,4 @@
-from sqlalchemy import and_, inspect, or_, select
-from sqlalchemy.orm import selectinload
+from sqlalchemy import and_, inspect, or_
 from app.users.models import Role, User
 from app.dao import BaseDAO, async_session_maker
 from app.users.rb import RBRegistration
@@ -13,7 +12,7 @@ class DAORole(BaseDAO):
 
 class DAOUser(BaseDAO):
     model = User
-    relationships = [model.role, model.applications]
+    relationships = [model.role, model.applications, model.performed_applications]
     
     @classmethod
     async def search_users(cls, limit, offset, **filter):

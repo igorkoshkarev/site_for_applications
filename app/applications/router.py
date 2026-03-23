@@ -8,6 +8,8 @@ from app.utils import get_user_id_from_cookies
 from fastapi.templating import Jinja2Templates
 from typing import Annotated
 from fastapi.responses import RedirectResponse
+from app.applications.models import ApplicationStatus
+from app.users.auth import get_user_id_from_token
 
 
 router = APIRouter(prefix="/applications", tags=['Работа с заявками'])
@@ -53,6 +55,20 @@ async def get_application(request: Request, application_id: int):
     return templates.TemplateResponse('application.html', {
         'request': request,
         'user': request.state.user,
-        'application': application
+        'application': application,
+        'ApplicationStatus': ApplicationStatus,
     })
 
+
+@router.get('/{application_id}/accept', summary='Взять заявку на исполнение')
+async def accept_application(request: Request, application_id: int):
+    await ApplicationsDAO.update_one(application_id, status=ApplicationStatus.in_process, performer_id=get_user_id_from_token(request))
+    return RedirectResponse(f'/applications/{application_id}', status_code=302)
+
+
+@router.get('/{application_id}/close', summary='Закрыть заявку')
+async def close_application(request: Request, application_id: int):
+    application = await ApplicationsDAO.get_one(id=application_id)
+    if application['performer_id'] == get_user_id_from_token(request):
+        await ApplicationsDAO.update_one(application_id, status=ApplicationStatus.is_closed)
+    return RedirectResponse(f'/applications/{application_id}', status_code=302)

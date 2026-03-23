@@ -120,7 +120,7 @@
         {% include "header.html" %}
 
         <div class="ticket-detail-card">
-            <span class="status-badge">Статус: Выполнено</span>
+            <span class="status-badge">Статус: {{ application.status }}</span>
 
             <h2>Тема: {{ application.title }}</h2>
 
@@ -138,6 +138,20 @@
                     <span class="info-value">{{ application.user.username }}</span>
                 </div>
             </div>
+            {% if application.status == ApplicationStatus.is_open %}
+            <a href="{{ url_for('accept_application', application_id=application.id) }}">
+                <button>
+                    Взять на исполнение
+                </button>
+            </a>
+            {% endif %}
+            {% if application.status == ApplicationStatus.in_process %}
+            <a href="{{ url_for('close_application', application_id=application.id) }}">
+                <button>
+                    Закрыть заявку
+                </button>
+            </a>
+            {% endif %}
         </div>
     </div>
 </body>

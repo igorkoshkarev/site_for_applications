@@ -70,7 +70,8 @@ class BaseDAO:
     @classmethod
     async def update_one(cls, item_id: str, **new_data):
         async with async_session_maker() as session:
-            query = update(cls.model).where(cls.model.inventory_number == item_id).values(**new_data)
+            primary_key_column = await cls._get_primary_key_column()
+            query = update(cls.model).where(primary_key_column == item_id).values(**new_data)
             await session.execute(query)
             await session.commit()
     
@@ -110,3 +111,8 @@ class BaseDAO:
             elif type(v) == int:
                 query.append(mapper.columns[k] == v)
         return and_(*query)
+    
+    @classmethod
+    async def _get_primary_key_column(cls):
+        mapper = inspect(cls.model)
+        return mapper.primary_key[0]
