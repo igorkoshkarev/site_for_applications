@@ -13,7 +13,8 @@ class User(Base):
     role_name: Mapped[int] = mapped_column(ForeignKey('roles.role'), nullable=False)
 
     role = relationship('Role', back_populates='users')
-    applications = relationship("Application", back_populates="user")
+    applications = relationship("Application", foreign_keys='[Application.user_id]', back_populates="user")
+    performed_applications = relationship('Application', foreign_keys='[Application.performer_id]', back_populates='performer')
 
 
 class Role(Base):
