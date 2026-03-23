@@ -303,13 +303,7 @@
 </head>
 <body>
     <div class="app">
-        <div class="navbar">
-            <a href="{{ url_for('main_page') }}" class="nav-link">Главная</a>
-            <a href="{{ url_for('get_applications') }}" class="nav-link">Заявки</a>
-            <a href="{{ url_for('get_all_inventory') }}" class="nav-link">Инвентарь</a>
-            <a href="{{ url_for('get_all_users') }}" class="nav-link active">Пользователи</a>
-            <span class="account">Аккаунт: Администратор</span>
-        </div>
+        {% include "header.html" %}
 
         <!-- <div class="page-header">
             <h1>Список пользователей</h1>
@@ -343,7 +337,7 @@
             </div>
 
             {% for user in users %}
-            
+            <a href="{{ url_for('foreign_account', user_id=user.id) }}">
             <div class="user-item">
                 <div class="user-avatar">{{ user.username[0].upper() }}</div>
                 <div class="user-info">
@@ -359,11 +353,11 @@
                     <span class="user-role {{ user.role.css_style_class }}">{{ user.role.russian_name }}</span>
                     <div class="user-actions">
                         <!--<a href="url_for('') "></a><button class="action-btn">✏️</button></a>-->
-                        <a href="{{ url_for('foreign_account', user_id=user.id) }}"><button class="action-btn">👤</button></a>
+                        <!--<button class="action-btn">👤</button> -->
                         <!-- <a><button class="action-btn">⋯</button></a> -->
                     </div>
                 </div>
-            </div>
+            </div></a>
 
             {% endfor %}
             <!-- Администратор

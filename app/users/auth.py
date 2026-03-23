@@ -33,3 +33,10 @@ def decode_token(token: str) -> dict:
 
 def get_user_token(request: Request):
     return request.cookies.get('users_access_token')
+
+
+def get_user_id_from_token(request: Request):
+    token = get_user_token(request)
+    if token:
+        return int(decode_token(token)['sub'])
+    return None

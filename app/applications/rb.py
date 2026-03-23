@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from app.schemas import SearchFilter, Pagination
+from app.schemas import SearchFilter, PaginationModel
 from typing import Optional
 
 

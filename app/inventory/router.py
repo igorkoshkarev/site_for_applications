@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Form
 from app.inventory.dao import DAOTool, DAOCabinet
 from fastapi.exceptions import HTTPException
-from app.schemas import Pagination
+from app.schemas import PaginationModel
 from typing import Annotated
 from app.inventory.rb import InventorySearchFilter, CreateInventoryRB
 from sqlalchemy.orm import Session, joinedload
@@ -34,10 +34,11 @@ async def put_inventory_item(inventory_number: str):
 
 @router.get('/', summary="Получить весь инвентарь")
 async def get_all_inventory(request: Request,
-                    pagination: Annotated[Pagination, Depends()],
+                    pagination: Annotated[PaginationModel, Depends()],
                     filter: Annotated[InventorySearchFilter, Depends()]):
     inventory = await DAOTool.get_all_with_limit(pagination.limit, pagination.get_offset(), **dict(filter))
     return templates.TemplateResponse('inventory.html', {
+        'user': request.state.user,
         'request': request,
         'inventory': inventory,
         'status': Status
@@ -47,6 +48,7 @@ async def get_all_inventory(request: Request,
 async def create_inventory_page(request: Request):
     cabinets = await DAOCabinet.get_all(columns=['name'])
     return templates.TemplateResponse('create_inventory_item.html', {
+        'user': request.state.user,
         'request': request,
         'cabinets': cabinets,
         'status': Status

@@ -8,7 +8,7 @@ from app.users.rb import RBRegistration, RBLogin
 from app.users.auth import get_password_hash, verify_password, create_access_token, decode_token
 from app.users.schemas import AccountResponse
 from fastapi.templating import Jinja2Templates
-from app.schemas import Pagination
+from app.schemas import PaginationModel
 from typing import Annotated
 from app.users.rb import UserSearchFilter
 
@@ -18,7 +18,7 @@ templates = Jinja2Templates(directory=str('app/templates'))
 
 
 @router.get('/', name="get_all_users", summary="Вывести список пользователей")
-async def get_all_users(request: Request, pagination: Annotated[Pagination, Depends()], filter: Annotated[UserSearchFilter, Depends()]):
+async def get_all_users(request: Request, pagination: Annotated[PaginationModel, Depends()], filter: Annotated[UserSearchFilter, Depends()]):
     
     users = await DAOUser.search_users(pagination.limit, pagination.get_offset(), username=filter.name, email=filter.name, role_name=filter.role_name, cabinet=filter.cabinet)
     roles = await DAORole.get_all(columns=['role', 'russian_name'])

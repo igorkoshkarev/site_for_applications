@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form
 from fastapi.requests import Request
-from app.schemas import Pagination
+from app.schemas import PaginationModel
 from app.applications.rb import ApplicationSearchFilter, CreateApplicationRB
 from typing import Annotated
 from app.applications.dao import ApplicationsDAO
@@ -18,7 +18,7 @@ templates = Jinja2Templates(directory=str('app/templates'))
 async def get_applications(
     request: Request,
     filter: Annotated[ApplicationSearchFilter, Depends()],
-    pagination: Annotated[Pagination, Depends()]):
+    pagination: Annotated[PaginationModel, Depends()]):
 
     applications = await ApplicationsDAO.get_all_with_limit(pagination.limit, 
                                                       pagination.get_offset(),

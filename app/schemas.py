@@ -8,7 +8,7 @@ class SearchFilter(BaseModel):
     name: Optional[str] = Field(None)
     
 
-class Pagination(BaseModel):
+class PaginationModel(BaseModel):
     limit: int = Field(10, ge=0)
     page: int = Field(1, ge=1)
 
