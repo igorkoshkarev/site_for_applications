@@ -29,3 +29,7 @@ def decode_token(token: str) -> dict:
     auth_data = get_auth_data()
     decoded_jwt = jwt.decode(token, key=auth_data['secret_key'], algorithms=[auth_data['algorithm']])
     return decoded_jwt
+
+
+def get_user_token(request: Request):
+    return request.cookies.get('users_access_token')
