@@ -17,7 +17,6 @@ templates = Jinja2Templates(directory='app/templates')
 @router.get('/item/{inventory_number}/equip', summary="Взять инвентарную вещь")
 async def equip_inventory_item(inventory_number: str):
     await DAOTool.update_one(inventory_number, **{'status': Status.used})
-    #return {'or': True}
     response = RedirectResponse('/inventory', status_code=302)
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
     response.headers["Pragma"] = "no-cache"
@@ -27,7 +26,6 @@ async def equip_inventory_item(inventory_number: str):
 @router.get('/item/{inventory_number}/put', summary="Положить инвентарную вещь на склад")
 async def put_inventory_item(inventory_number: str):
     await DAOTool.update_one(inventory_number, **{'status': Status.in_storage})
-    #return {'ok': True}
     response = RedirectResponse('/inventory', status_code=302)
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
     response.headers["Pragma"] = "no-cache"
@@ -38,14 +36,12 @@ async def put_inventory_item(inventory_number: str):
 async def get_all_inventory(request: Request,
                     pagination: Annotated[Pagination, Depends()],
                     filter: Annotated[InventorySearchFilter, Depends()]):
-    print(request.headers)
     inventory = await DAOTool.get_all_with_limit(pagination.limit, pagination.get_offset(), **dict(filter))
     return templates.TemplateResponse('inventory.html', {
         'request': request,
         'inventory': inventory,
         'status': Status
     })
-    return {'что': True}
 
 @router.get('/create', summary="Страница добавления инвентаря")
 async def create_inventory_page(request: Request):
