@@ -40,10 +40,11 @@ class BaseRoleCheckMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         user = request.state.user
-        
         if self.check_page(request.url.path) and getattr(user['role'], self.role_law):
+            print('penis')
             response = await call_next(request)
-        elif request.url.path not in self.pages:
+        elif not self.check_page(request.url.path):
+            print('penis 2')
             response = await call_next(request)
         else:
             return RedirectResponse('/', status_code=302)

@@ -86,11 +86,10 @@ class BaseDAO:
     @classmethod
     async def _format_result(cls, result, columns=[]):
         if not result:
-            raise ValueError(f'В модели {repr(cls.model)} нет таких строк.')
+            return []
         if columns:
             return [{c: getattr(r, c) for c in columns} for r in result]
         else:
-            mapper = inspect(cls.model)
             return [{c: getattr(r, c) for c, v in r.__dict__.items()} for r in result]
     
     @classmethod

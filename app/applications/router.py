@@ -10,6 +10,7 @@ from typing import Annotated
 from fastapi.responses import RedirectResponse
 from app.applications.models import ApplicationStatus
 from app.users.auth import get_user_id_from_token
+from fastapi.exceptions import HTTPException
 
 
 router = APIRouter(prefix="/applications", tags=['Работа с заявками'])
@@ -34,7 +35,7 @@ async def get_applications(
     })
 
 
-@router.get('/create', summary='страница создания заявки')
+@router.get('/create', summary='Страница создания заявки')
 async def create_application_page(request: Request):
     return templates.TemplateResponse('create_application.html', {
         'request': request,
@@ -52,6 +53,8 @@ async def create_application(request: Request, application_info: Annotated[Creat
 @router.get('/{application_id}', summary='Получить заявку')
 async def get_application(request: Request, application_id: int):
     application = await ApplicationsDAO.get_one(id=application_id)
+    if not application:
+        raise HTTPException(status_code=404, detail='Page not found')
     return templates.TemplateResponse('application.html', {
         'request': request,
         'user': request.state.user,
@@ -62,13 +65,18 @@ async def get_application(request: Request, application_id: int):
 
 @router.get('/{application_id}/accept', summary='Взять заявку на исполнение')
 async def accept_application(request: Request, application_id: int):
-    await ApplicationsDAO.update_one(application_id, status=ApplicationStatus.in_process, performer_id=get_user_id_from_token(request))
+    try:
+        await ApplicationsDAO.update_one(application_id, status=ApplicationStatus.in_process, performer_id=get_user_id_from_token(request))
+    except:
+        raise HTTPException(status_code=404, detail='Page not found')
     return RedirectResponse(f'/applications/{application_id}', status_code=302)
 
 
 @router.get('/{application_id}/close', summary='Закрыть заявку')
 async def close_application(request: Request, application_id: int):
     application = await ApplicationsDAO.get_one(id=application_id)
+    if not application:
+        raise HTTPException(status_code=404, detail='Page not found')
     if application['performer_id'] == get_user_id_from_token(request):
         await ApplicationsDAO.update_one(application_id, status=ApplicationStatus.is_closed)
     return RedirectResponse(f'/applications/{application_id}', status_code=302)

@@ -15,21 +15,31 @@ templates = Jinja2Templates(directory='app/templates')
 
 @router.get('/item/{inventory_number}/equip', summary="Взять инвентарную вещь")
 async def equip_inventory_item(inventory_number: str):
-    await DAOTool.update_one(inventory_number, **{'status': ToolStatus.used})
-    response = RedirectResponse('/inventory', status_code=302)
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
+    try:
+        await DAOTool.update_one(inventory_number, **{'status': ToolStatus.used})
+    except:
+        raise HTTPException(status_code=404, detail="Item not found")
+    else:
+        response = RedirectResponse('/inventory', status_code=302)
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+
 
 @router.get('/item/{inventory_number}/put', summary="Положить инвентарную вещь на склад")
 async def put_inventory_item(inventory_number: str):
-    await DAOTool.update_one(inventory_number, **{'status': ToolStatus.in_storage})
-    response = RedirectResponse('/inventory', status_code=302)
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
+    try:
+        await DAOTool.update_one(inventory_number, **{'status': ToolStatus.in_storage})
+    except:
+        raise HTTPException(status_code=404, detail="Item not found")
+    else:
+        response = RedirectResponse('/inventory', status_code=302)
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, private"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+
 
 @router.get('/', summary="Получить весь инвентарь")
 async def get_all_inventory(request: Request,
@@ -44,6 +54,7 @@ async def get_all_inventory(request: Request,
         'status': ToolStatus,
         'pagination': pagination.get_context(total)
     })
+
 
 @router.get('/create', summary="Страница добавления инвентаря")
 async def create_inventory_page(request: Request):
@@ -63,18 +74,21 @@ async def create_inventory_page(request: Request):
 
 @router.post('/create', summary="Добавить инвентарь")
 async def create_inventory(request: Request, inventory_info: Annotated[CreateInventoryRB, Form()]):
-    if await DAOCabinet.check(name=inventory_info.cabinet_name):
+    try:
         await DAOTool.create(**dict(inventory_info))
-        return RedirectResponse('/inventory', status_code=301)
-    return HTTPException(status_code=401, detail="Вы неправильно вписали значения в форму.")
+    except:
+        return HTTPException(status_code=401, detail="Вы неправильно вписали значения в форму.")
+    return RedirectResponse('/inventory', status_code=301)
 
 
 @router.get('/item/{inventory_number}', summary="Получить вещь из инвентаря")
 async def get_inventory_item(request: Request, inventory_number: str):
     item = await DAOTool.get_one(inventory_number=inventory_number)
-    return templates.TemplateResponse('inventory_item.html', {
-        'request': request,
-        'user': request.state.user,
-        'item': item
-    })
+    if item:
+        return templates.TemplateResponse('inventory_item.html', {
+            'request': request,
+            'user': request.state.user,
+            'item': item
+        })
+    raise HTTPException(status_code=404, detail="Item not found")
 

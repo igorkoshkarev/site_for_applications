@@ -8,6 +8,6 @@ class ApplicationSearchFilter(BaseModel):
 
 
 class CreateApplicationRB(BaseModel):
-    title: str
-    description: str
+    title: str = Field(..., min_length=1, max_length=140, description='Название заявки')
+    description: str = Field(..., max_length=1000, description='Описание проблемы')
     

@@ -45,15 +45,20 @@ async def registration_page(request: Request):
 
 
 @router.post('/registration', summary="Зарегистрировать пользователя")
-async def create_user(request: Request, user_info: Annotated[RBRegistration, Form()]):
+async def create_user(request: Request, user_info: Annotated[RBRegistration, Form()]): 
     username = user_info.username
-    password = get_password_hash(user_info.password)
+    user_info.password = get_password_hash(user_info.password)
     full_name = user_info.full_name
+    phone = user_info.phone
     email = user_info.email
+    cabinet = user_info.cabinet
     role = DAORole.DEFAULT_ROLE
-
-    await DAOUser.create(username=username, password=password, email=email, full_name=full_name, role_name=role)
-    return RedirectResponse('/users/login', status_code=301)
+    try:
+        await DAOUser.create(role_name=role, **dict(user_info))
+    except:
+        return RedirectResponse('/users/registration', status_code=302)
+    else:
+        return RedirectResponse('/users/login', status_code=302)
 
 
 @router.get('/login', summary="Страница входа")
@@ -67,9 +72,9 @@ async def login_page(request: Request):
 async def login_user(response: Response, user_info: Annotated[RBLogin, Form()]):
     if await DAOUser.check(username=user_info.username):
         user = await DAOUser.get_one(username=user_info.username)
-        if verify_password(user_info.password, user.password):
-            access_token = create_access_token({'sub': str(user.id)})
-            r = RedirectResponse(f'/users/{user.id}', status_code=301)
+        if verify_password(user_info.password, user['password']):
+            access_token = create_access_token({'sub': str(user['id'])})
+            r = RedirectResponse(f'/users/{user['id']}', status_code=301)
             r.set_cookie(key="users_access_token", value=access_token, httponly=True)
             response.set_cookie(key="users_access_token", value=access_token, httponly=True)
             return r
@@ -91,6 +96,8 @@ async def account(request: Request):
 @router.get('/{user_id}', summary="Профиль пользователя")
 async def foreign_account(request: Request, user_id: int):
     user = await DAOUser.get_one(id=user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail='page not found')
     return templates.TemplateResponse('user.html', {
             'request': request,
             'user': request.state.user,
