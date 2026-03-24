@@ -214,10 +214,14 @@
                 <div class="info-fields">
                     <div class="field-row">
                         <span class="field-label">ФИО</span>
+                        <span class="field-value">{{ account.full_name }}</span>
+                        <button class="btn-edit">Изменить</button>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Ник</span>
                         <span class="field-value">{{ account.username }}</span>
                         <button class="btn-edit">Изменить</button>
                     </div>
-
                     <div class="field-row">
                         <span class="field-label">Должность</span>
                         <span class="field-value">{{ account.role.russian_name }}</span>

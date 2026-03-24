@@ -48,10 +48,11 @@ async def registration_page(request: Request):
 async def create_user(request: Request, user_info: Annotated[RBRegistration, Form()]):
     username = user_info.username
     password = get_password_hash(user_info.password)
+    full_name = user_info.full_name
     email = user_info.email
     role = DAORole.DEFAULT_ROLE
 
-    await DAOUser.create(username=username, password=password, email=email, role_name=role)
+    await DAOUser.create(username=username, password=password, email=email, full_name=full_name, role_name=role)
     return RedirectResponse('/users/login', status_code=301)
 
 

@@ -35,12 +35,14 @@ async def put_inventory_item(inventory_number: str):
 async def get_all_inventory(request: Request,
                     pagination: Annotated[PaginationModel, Depends()],
                     filter: Annotated[InventorySearchFilter, Depends()]):
+    total = await DAOTool.count()
     inventory = await DAOTool.get_all_with_limit(pagination.limit, pagination.get_offset(), **dict(filter))
     return templates.TemplateResponse('inventory.html', {
         'user': request.state.user,
         'request': request,
         'inventory': inventory,
-        'status': ToolStatus
+        'status': ToolStatus,
+        'pagination': pagination.get_context(total)
     })
 
 @router.get('/create', summary="Страница добавления инвентаря")
@@ -72,6 +74,7 @@ async def get_inventory_item(request: Request, inventory_number: str):
     item = await DAOTool.get_one(inventory_number=inventory_number)
     return templates.TemplateResponse('inventory_item.html', {
         'request': request,
+        'user': request.state.user,
         'item': item
     })
 

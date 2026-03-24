@@ -6,6 +6,7 @@ from sqlalchemy import Text, ForeignKey
 class User(Base):
     id: Mapped[int_pk]
     username: Mapped[str] = mapped_column(Text, nullable=False)
+    full_name: Mapped[str] = mapped_column(nullable=False)
     password: Mapped[str]
     email: Mapped[str] = mapped_column(nullable=True)
     phone: Mapped[str] = mapped_column(nullable=True)

@@ -170,11 +170,13 @@
             <div class="preview-info">
                 <div class="preview-item">
                     <span class="preview-label">Заявитель:</span>
-                    <span class="preview-value">Иванова И.И.</span>
+                    <span class="preview-value">{{ user.full_name }}</span>
                 </div>
                 <div class="preview-item">
+                    {% if user.cabinet != None %}
                     <span class="preview-label">Кабинет:</span>
-                    <span class="preview-value">111</span>
+                    <span class="preview-value">{{ user.cabinet }}</span>
+                    {% endif %}
                 </div>
             </div>
 

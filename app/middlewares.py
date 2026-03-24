@@ -3,6 +3,7 @@ from fastapi.responses import Response, RedirectResponse
 from fastapi.requests import Request
 from app.users.auth import get_user_token, get_user_id_from_token
 from app.users.dao import DAOUser
+import re
 
 
 class CheckLoginMiddleware(BaseHTTPMiddleware):
@@ -30,3 +31,51 @@ class GetUserDataMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
 
         return response
+
+
+class BaseRoleCheckMiddleware(BaseHTTPMiddleware):
+
+    role_law = None
+    pages = None
+
+    async def dispatch(self, request: Request, call_next):
+        user = request.state.user
+        
+        if self.check_page(request.url.path) and getattr(user['role'], self.role_law):
+            response = await call_next(request)
+        elif request.url.path not in self.pages:
+            response = await call_next(request)
+        else:
+            return RedirectResponse('/', status_code=302)
+        return response
+    
+    def check_page(self, path):
+        for page in self.pages:
+            if re.match(page, path):
+                return True
+        return False
+
+
+class ShowInventoryRoleCheckMiddleware(BaseRoleCheckMiddleware):
+
+    role_law = 'law_show_inventory'
+    pages = [r'\/inventory[.]*']
+
+
+class AddInventoryRoleCheckMiddleware(BaseRoleCheckMiddleware):
+
+    role_law = 'law_add_inventory'
+    pages = [r'\/inventory\/create[\/]?']
+
+
+class ChangeStatusInventoryRoleCheckMiddleware(BaseRoleCheckMiddleware):
+
+    role_law = 'law_use_inventory'
+    pages = [r'\/inventory\/item\/[^\/]+\/put[\/]?', r'\/inventory\/item\/[^\/]+\/equip[\/]?']
+
+
+class ChangeStatusApplicationsRoleCheckMiddleware(BaseRoleCheckMiddleware):
+
+    role_law = 'law_update_applications'
+    pages = [r'\/applications\/[^\/]+\/accept[\/]?', r'\/applications\/[^\/]+\/close[\/]?']
+
