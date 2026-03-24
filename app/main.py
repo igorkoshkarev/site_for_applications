@@ -6,8 +6,10 @@ from app.users.router import router as user_router
 from app.applications.router import router as application_router
 from app.inventory.router import router as inventory_router
 import app.middlewares as middleware
+from app.admin import admin, lifespan
 
-main = FastAPI()
+
+main = FastAPI(lifespan=lifespan)
 main.add_middleware(middleware.ChangeStatusApplicationsRoleCheckMiddleware)
 main.add_middleware(middleware.ChangeStatusInventoryRoleCheckMiddleware)
 main.add_middleware(middleware.AddInventoryRoleCheckMiddleware)
@@ -17,6 +19,7 @@ main.add_middleware(middleware.GetUserDataMiddleware)
 
 
 main.mount('/static', StaticFiles(directory='app/static'), 'static')
+main.mount('/admin', admin.app)
 templates = Jinja2Templates(directory=str('app/templates'))
 
 @main.get("/", response_class=HTMLResponse)
