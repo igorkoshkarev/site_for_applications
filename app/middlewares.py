@@ -80,3 +80,7 @@ class ChangeStatusApplicationsRoleCheckMiddleware(BaseRoleCheckMiddleware):
     role_law = 'law_update_applications'
     pages = [r'\/applications\/[^\/]+\/accept[\/]?', r'\/applications\/[^\/]+\/close[\/]?']
 
+class OpenAdminPanelRoleCheckMiddleware(BaseRoleCheckMiddleware):
+
+    role_law = 'law_open_admin_panel'
+    pages = [r'\/admin[.]*']

@@ -10,6 +10,7 @@ from app.admin import admin, lifespan
 
 
 main = FastAPI(lifespan=lifespan)
+main.add_middleware(middleware.OpenAdminPanelRoleCheckMiddleware)
 main.add_middleware(middleware.ChangeStatusApplicationsRoleCheckMiddleware)
 main.add_middleware(middleware.ChangeStatusInventoryRoleCheckMiddleware)
 main.add_middleware(middleware.AddInventoryRoleCheckMiddleware)

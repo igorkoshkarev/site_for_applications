@@ -32,5 +32,6 @@ class Role(Base):
     law_add_inventory: Mapped[role_law]
     law_use_inventory: Mapped[role_law]
     law_delete_inventory: Mapped[role_law]
+    law_open_admin_panel: Mapped[role_law]
 
     users = relationship("User", back_populates="role")
