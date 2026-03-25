@@ -9,8 +9,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.applications.dao import ApplicationsDAO
 from app.applications.models import ApplicationStatus
-from app.applications.rb import ApplicationSearchFilter, CreateApplicationRB
-from app.mail import enqueue_application_status_email
+from app.applications.rb import ApplicationFeedbackRB, ApplicationSearchFilter, CreateApplicationRB
+from app.mail import enqueue_application_feedback_email, enqueue_application_status_email
 from app.schemas import PaginationModel
 from app.users.auth import get_user_id_from_token
 from app.utils import get_user_id_from_cookies
@@ -19,6 +19,16 @@ from app.utils import get_user_id_from_cookies
 router = APIRouter(prefix="/applications", tags=["Applications"])
 templates = Jinja2Templates(directory=str("app/templates"))
 logger = logging.getLogger(__name__)
+
+
+def _normalize_status(value: object) -> str:
+    if hasattr(value, "name"):
+        return str(getattr(value, "name"))
+    raw = str(value)
+    if "." in raw:
+        raw = raw.split(".")[-1]
+    mapping = {"1": "is_open", "2": "in_process", "3": "is_closed", "4": "is_confirmed"}
+    return mapping.get(raw, raw)
 
 
 @router.get("/", summary="Get all applications")
@@ -66,11 +76,19 @@ async def get_application(request: Request, application_id: int):
     if not application:
         raise HTTPException(status_code=404, detail="Page not found")
 
+    current_user_id = get_user_id_from_token(request)
+    can_leave_feedback = (
+        _normalize_status(application["status"]) == "is_closed"
+        and application["user_id"] == current_user_id
+    )
+
     return templates.TemplateResponse("application.html", {
         "request": request,
         "user": request.state.user,
         "application": application,
         "ApplicationStatus": ApplicationStatus,
+        "can_leave_feedback": can_leave_feedback,
+        "feedback_sent": request.query_params.get("feedback") == "sent",
     })
 
 
@@ -117,3 +135,36 @@ async def close_application(request: Request, application_id: int):
     )
 
     return RedirectResponse(f"/applications/{application_id}", status_code=302)
+
+
+@router.post("/{application_id}/feedback", summary="Send feedback to performer")
+async def send_feedback(
+    request: Request,
+    application_id: int,
+    feedback_info: Annotated[ApplicationFeedbackRB, Form()],
+):
+    application = await ApplicationsDAO.get_one(id=application_id)
+    if not application:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    current_user_id = get_user_id_from_token(request)
+    if application["user_id"] != current_user_id:
+        raise HTTPException(status_code=403, detail="Only applicant can send feedback")
+
+    if _normalize_status(application["status"]) != "is_closed":
+        raise HTTPException(status_code=400, detail="Feedback is available only for completed applications")
+
+    performer = application.get("performer")
+    if not performer or not performer.email:
+        raise HTTPException(status_code=400, detail="Performer email is not configured")
+
+    applicant_name = request.state.user["full_name"] if request.state.user else None
+    enqueue_application_feedback_email(
+        email=performer.email,
+        application_id=application["id"],
+        title=application["title"],
+        feedback=feedback_info.feedback,
+        applicant_name=applicant_name,
+    )
+
+    return RedirectResponse(f"/applications/{application_id}?feedback=sent", status_code=302)

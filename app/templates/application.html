@@ -38,6 +38,12 @@
                 <p>{{ application.description }}</p>
             </div>
 
+            {% if feedback_sent %}
+                <div class="card stack">
+                    <strong>Спасибо! Отзыв отправлен исполнителю.</strong>
+                </div>
+            {% endif %}
+
             <div class="grid cols-2">
                 <div class="card stack">
                     <span class="muted">Заявитель</span>
@@ -48,6 +54,16 @@
                     <strong>{{ application.user.cabinet }}</strong>
                 </div>
             </div>
+
+            {% if can_leave_feedback %}
+                <section class="card stack">
+                    <h3>Оставить отзыв исполнителю</h3>
+                    <form class="stack" method="post" action="{{ url_for('send_feedback', application_id=application.id) }}">
+                        <textarea name="feedback" required minlength="3" maxlength="2000" placeholder="Опишите, как была выполнена заявка"></textarea>
+                        <button class="btn primary" type="submit">Отправить отзыв</button>
+                    </form>
+                </section>
+            {% endif %}
 
             <a class="btn ghost" href="{{ url_for('get_applications') }}">← К списку заявок</a>
         </section>

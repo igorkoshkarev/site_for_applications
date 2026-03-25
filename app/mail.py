@@ -88,6 +88,40 @@ async def send_application_status_email(
     await fm.send_message(message)
 
 
+async def send_application_feedback_email(
+    *,
+    email: str | None,
+    application_id: int,
+    title: str,
+    feedback: str,
+    applicant_name: str | None = None,
+) -> None:
+    if not email:
+        return
+    if not _is_mail_configured():
+        logger.warning(
+            "SMTP settings are not configured. Feedback email for application %s was not sent.",
+            application_id,
+        )
+        return
+
+    subject = f"Feedback for application #{application_id}"
+    body = (
+        f"Application #{application_id} ({title}) has a new feedback from applicant "
+        f"{applicant_name or 'user'}.\n\n"
+        f"Feedback text:\n{feedback}"
+    )
+
+    message = MessageSchema(
+        subject=subject,
+        recipients=[email],
+        body=body,
+        subtype=MessageType.plain,
+    )
+    fm = FastMail(_get_mail_config())
+    await fm.send_message(message)
+
+
 async def _mail_worker() -> None:
     if _mail_queue is None:
         return
@@ -95,7 +129,11 @@ async def _mail_worker() -> None:
     while True:
         payload = await _mail_queue.get()
         try:
-            await send_application_status_email(**payload)
+            message_type = payload.pop("message_type", "status")
+            if message_type == "feedback":
+                await send_application_feedback_email(**payload)
+            else:
+                await send_application_status_email(**payload)
         except Exception as exc:
             logger.exception(
                 "Failed to send email for application %s: %s",
@@ -157,6 +195,36 @@ def enqueue_application_status_email(
         return
 
     try:
-        _mail_queue.put_nowait(payload)
+        _mail_queue.put_nowait({"message_type": "status", **payload})
     except asyncio.QueueFull:
         logger.error("Mail queue is full. Dropping email for application %s", application_id)
+
+
+def enqueue_application_feedback_email(
+    *,
+    email: str | None,
+    application_id: int,
+    title: str,
+    feedback: str,
+    applicant_name: str | None = None,
+) -> None:
+    if not email:
+        return
+
+    payload = {
+        "email": email,
+        "application_id": application_id,
+        "title": title,
+        "feedback": feedback,
+        "applicant_name": applicant_name,
+    }
+
+    if _mail_queue is None:
+        logger.warning("Mail queue is not initialized, fallback to ad-hoc task")
+        asyncio.create_task(send_application_feedback_email(**payload))
+        return
+
+    try:
+        _mail_queue.put_nowait({"message_type": "feedback", **payload})
+    except asyncio.QueueFull:
+        logger.error("Mail queue is full. Dropping feedback email for application %s", application_id)
