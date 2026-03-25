@@ -11,6 +11,7 @@ from app.inventory.dao import DAOCabinet, DAOTool
 from app.inventory.models import ToolStatus
 from app.inventory.rb import CreateInventoryRB, InventorySearchFilter
 from app.schemas import PaginationModel
+from app.users.auth import verify_csrf_token
 
 
 router = APIRouter(prefix='/inventory', tags=['Inventory'])
@@ -18,8 +19,11 @@ templates = Jinja2Templates(directory='app/templates')
 logger = logging.getLogger(__name__)
 
 
-@router.get('/item/{inventory_number}/equip', summary='Equip inventory item')
-async def equip_inventory_item(inventory_number: str):
+@router.post('/item/{inventory_number}/equip', summary='Equip inventory item')
+async def equip_inventory_item(request: Request, inventory_number: str, csrf_token: Annotated[str, Form()]):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     try:
         await DAOTool.update_one(inventory_number, **{'status': ToolStatus.used})
     except Exception as exc:
@@ -33,8 +37,11 @@ async def equip_inventory_item(inventory_number: str):
     return response
 
 
-@router.get('/item/{inventory_number}/put', summary='Put inventory item back')
-async def put_inventory_item(inventory_number: str):
+@router.post('/item/{inventory_number}/put', summary='Put inventory item back')
+async def put_inventory_item(request: Request, inventory_number: str, csrf_token: Annotated[str, Form()]):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     try:
         await DAOTool.update_one(inventory_number, **{'status': ToolStatus.in_storage})
     except Exception as exc:
@@ -81,7 +88,14 @@ async def create_inventory_page(request: Request):
 
 
 @router.post('/create', summary='Create inventory item')
-async def create_inventory(request: Request, inventory_info: Annotated[CreateInventoryRB, Form()]):
+async def create_inventory(
+    request: Request,
+    inventory_info: Annotated[CreateInventoryRB, Form()],
+    csrf_token: Annotated[str, Form()],
+):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     if not await DAOCabinet.check(name=inventory_info.cabinet_name):
         raise HTTPException(status_code=401, detail='Cabinet not found')
 

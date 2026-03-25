@@ -16,10 +16,16 @@
             <div class="row">
                 <h1>Заявка №{{ application.id }}</h1>
                 {% if st in ['is_open', '1'] %}
-                    <a class="btn primary" href="{{ url_for('accept_application', application_id=application.id) }}">Взять в исполнение</a>
+                    <form method="post" action="{{ url_for('accept_application', application_id=application.id) }}" style="margin:0;">
+                        <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
+                        <button class="btn primary" type="submit">Взять в исполнение</button>
+                    </form>
                 {% endif %}
                 {% if st in ['in_process', '2'] %}
-                    <a class="btn primary" href="{{ url_for('close_application', application_id=application.id) }}">Закрыть заявку</a>
+                    <form method="post" action="{{ url_for('close_application', application_id=application.id) }}" style="margin:0;">
+                        <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
+                        <button class="btn primary" type="submit">Закрыть заявку</button>
+                    </form>
                 {% endif %}
             </div>
 
@@ -59,6 +65,7 @@
                 <section class="card stack">
                     <h3>Оставить отзыв исполнителю</h3>
                     <form class="stack" method="post" action="{{ url_for('send_feedback', application_id=application.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
                         <textarea name="feedback" required minlength="3" maxlength="2000" placeholder="Опишите, как была выполнена заявка"></textarea>
                         <button class="btn primary" type="submit">Отправить отзыв</button>
                     </form>

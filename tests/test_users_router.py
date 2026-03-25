@@ -107,6 +107,7 @@ def test_foreign_account_404(monkeypatch):
         return None
 
     monkeypatch.setattr(users_router.DAOUser, "get_one", fake_get_one)
+    monkeypatch.setattr(users_router, "get_user_id_from_token", lambda _: 404)
 
     request = make_request(path="/users/404")
     request.state.user = {"id": 1}

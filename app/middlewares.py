@@ -1,5 +1,5 @@
 from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi.responses import Response, RedirectResponse
+from fastapi.responses import RedirectResponse
 from fastapi.requests import Request
 from app.users.auth import get_user_token, get_user_id_from_token
 from app.users.dao import DAOUser
@@ -16,8 +16,12 @@ class CheckLoginMiddleware(BaseHTTPMiddleware):
             "/favicon.ico",
         )
 
-        if not get_user_token(request) and not request.url.path.startswith(public_path_prefixes):
-            return RedirectResponse('/users/login', status_code=302)
+        user_id = get_user_id_from_token(request)
+        if not user_id and not request.url.path.startswith(public_path_prefixes):
+            response = RedirectResponse('/users/login', status_code=302)
+            response.delete_cookie("users_access_token")
+            response.delete_cookie("csrf_token")
+            return response
         
         response = await call_next(request)
 
@@ -45,7 +49,7 @@ class BaseRoleCheckMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         user = request.state.user
-        if self.check_page(request.url.path) and getattr(user['role'], self.role_law):
+        if self.check_page(request.url.path) and user and getattr(user['role'], self.role_law):
             response = await call_next(request)
         elif not self.check_page(request.url.path):
             response = await call_next(request)

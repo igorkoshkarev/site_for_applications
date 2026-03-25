@@ -9,7 +9,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.inventory.dao import DAOCabinet
 from app.schemas import PaginationModel
-from app.users.auth import create_access_token, decode_token, get_password_hash, verify_password
+from app.config import settings
+from app.users.auth import create_access_token, generate_csrf_token, get_password_hash, get_user_id_from_token, verify_csrf_token, verify_password
 from app.users.dao import DAORole, DAOUser
 from app.users.rb import RBLogin, RBRegistration, UserSearchFilter
 from app.users.schemas import AccountResponse
@@ -20,12 +21,29 @@ templates = Jinja2Templates(directory=str('app/templates'))
 logger = logging.getLogger(__name__)
 
 
+def _can_manage_users(user: dict | None) -> bool:
+    if not user:
+        return False
+    role = user.get("role")
+    if not role:
+        return False
+    return bool(
+        getattr(role, "law_create_users", False)
+        or getattr(role, "law_update_users", False)
+        or getattr(role, "law_delete_users", False)
+        or getattr(role, "law_open_admin_panel", False)
+    )
+
+
 @router.get('/', name='get_all_users', summary='Get users list')
 async def get_all_users(
     request: Request,
     pagination: Annotated[PaginationModel, Depends()],
     filter: Annotated[UserSearchFilter, Depends()],
 ):
+    if not _can_manage_users(request.state.user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     users = await DAOUser.search_users(
         pagination.limit,
         pagination.get_offset(),
@@ -85,23 +103,46 @@ async def login_user(response: Response, user_info: Annotated[RBLogin, Form()]):
         user = await DAOUser.get_one(username=user_info.username)
         if verify_password(user_info.password, user['password']):
             access_token = create_access_token({'sub': str(user['id'])})
+            csrf_token = generate_csrf_token()
             redirect = RedirectResponse(f"/users/{user['id']}", status_code=301)
-            redirect.set_cookie(key='users_access_token', value=access_token, httponly=True)
-            response.set_cookie(key='users_access_token', value=access_token, httponly=True)
+            redirect.set_cookie(
+                key='users_access_token',
+                value=access_token,
+                httponly=True,
+                secure=settings.COOKIE_SECURE,
+                samesite=settings.COOKIE_SAMESITE,
+                max_age=settings.COOKIE_MAX_AGE,
+            )
+            redirect.set_cookie(
+                key='csrf_token',
+                value=csrf_token,
+                httponly=False,
+                secure=settings.COOKIE_SECURE,
+                samesite=settings.COOKIE_SAMESITE,
+                max_age=settings.COOKIE_MAX_AGE,
+            )
             return redirect
 
     raise HTTPException(status_code=401, detail='Invalid username or password')
 
 
-@router.get('/logout', summary='Logout user')
-async def logout_user():
+@router.post('/logout', summary='Logout user')
+async def logout_user(request: Request, csrf_token: Annotated[str, Form()]):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     response = RedirectResponse('/users/login', status_code=302)
     response.delete_cookie('users_access_token')
+    response.delete_cookie('csrf_token')
     return response
 
 
 @router.get('/{user_id}', summary='User profile')
 async def foreign_account(request: Request, user_id: int):
+    current_user_id = get_user_id_from_token(request)
+    if current_user_id != user_id and not _can_manage_users(request.state.user):
+        raise HTTPException(status_code=403, detail='Forbidden')
+
     user = await DAOUser.get_one(id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail='Page not found')

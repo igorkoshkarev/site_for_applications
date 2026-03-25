@@ -13,6 +13,7 @@
         <section class="card stack">
             <h1>Добавить инвентарь</h1>
             <form class="stack" action="{{ url_for('create_inventory') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
                 <div class="grid cols-2">
                     <div class="stack">
                         <label>Инвентарный номер</label>

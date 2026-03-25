@@ -1,5 +1,7 @@
 from passlib.context import CryptContext
 import datetime
+import secrets
+import hmac
 from datetime import timezone, timedelta
 from app.config import get_auth_data
 from jose import jwt
@@ -39,5 +41,17 @@ def get_user_token(request: Request):
 def get_user_id_from_token(request: Request):
     token = get_user_token(request)
     if token:
-        return int(decode_token(token)['sub'])
+        try:
+            return int(decode_token(token)['sub'])
+        except Exception:
+            return None
     return None
+
+
+def generate_csrf_token() -> str:
+    return secrets.token_urlsafe(32)
+
+
+def verify_csrf_token(request: Request, form_token: str | None) -> bool:
+    cookie_token = request.cookies.get("csrf_token")
+    return bool(cookie_token and form_token and hmac.compare_digest(cookie_token, form_token))

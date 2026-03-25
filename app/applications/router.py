@@ -12,7 +12,7 @@ from app.applications.models import ApplicationStatus
 from app.applications.rb import ApplicationFeedbackRB, ApplicationSearchFilter, CreateApplicationRB
 from app.mail import enqueue_application_feedback_email, enqueue_application_status_email
 from app.schemas import PaginationModel
-from app.users.auth import get_user_id_from_token
+from app.users.auth import get_user_id_from_token, verify_csrf_token
 from app.utils import get_user_id_from_cookies
 
 
@@ -31,16 +31,31 @@ def _normalize_status(value: object) -> str:
     return mapping.get(raw, raw)
 
 
+def _can_view_all_applications(user: dict | None) -> bool:
+    if not user:
+        return False
+    role = user.get("role")
+    return bool(role and getattr(role, "law_update_applications", False))
+
+
 @router.get("/", summary="Get all applications")
 async def get_applications(
     request: Request,
     filter: Annotated[ApplicationSearchFilter, Depends()],
     pagination: Annotated[PaginationModel, Depends()],
 ):
+    current_user_id = get_user_id_from_token(request)
+    if not current_user_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    filter_data = dict(filter)
+    if not _can_view_all_applications(request.state.user):
+        filter_data["user_id"] = current_user_id
+
     applications = await ApplicationsDAO.get_all_with_limit(
         pagination.limit,
         pagination.get_offset(),
-        **dict(filter),
+        **filter_data,
     )
     return templates.TemplateResponse("applications.html", {
         "request": request,
@@ -60,7 +75,14 @@ async def create_application_page(request: Request):
 
 
 @router.post("/create", summary="Create application")
-async def create_application(request: Request, application_info: Annotated[CreateApplicationRB, Form()]):
+async def create_application(
+    request: Request,
+    application_info: Annotated[CreateApplicationRB, Form()],
+    csrf_token: Annotated[str, Form()],
+):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     user_id = get_user_id_from_cookies(request)
     await ApplicationsDAO.create(
         user_id=user_id,
@@ -77,6 +99,16 @@ async def get_application(request: Request, application_id: int):
         raise HTTPException(status_code=404, detail="Page not found")
 
     current_user_id = get_user_id_from_token(request)
+    if not current_user_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    if (
+        not _can_view_all_applications(request.state.user)
+        and application["user_id"] != current_user_id
+        and application.get("performer_id") != current_user_id
+    ):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     can_leave_feedback = (
         _normalize_status(application["status"]) == "is_closed"
         and application["user_id"] == current_user_id
@@ -92,8 +124,11 @@ async def get_application(request: Request, application_id: int):
     })
 
 
-@router.get("/{application_id}/accept", summary="Accept application")
-async def accept_application(request: Request, application_id: int):
+@router.post("/{application_id}/accept", summary="Accept application")
+async def accept_application(request: Request, application_id: int, csrf_token: Annotated[str, Form()]):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     application = await ApplicationsDAO.get_one(id=application_id)
     if not application:
         raise HTTPException(status_code=404, detail="Page not found")
@@ -116,8 +151,11 @@ async def accept_application(request: Request, application_id: int):
     return RedirectResponse(f"/applications/{application_id}", status_code=302)
 
 
-@router.get("/{application_id}/close", summary="Close application")
-async def close_application(request: Request, application_id: int):
+@router.post("/{application_id}/close", summary="Close application")
+async def close_application(request: Request, application_id: int, csrf_token: Annotated[str, Form()]):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     application = await ApplicationsDAO.get_one(id=application_id)
     if not application:
         raise HTTPException(status_code=404, detail="Page not found")
@@ -142,7 +180,11 @@ async def send_feedback(
     request: Request,
     application_id: int,
     feedback_info: Annotated[ApplicationFeedbackRB, Form()],
+    csrf_token: Annotated[str, Form()],
 ):
+    if not verify_csrf_token(request, csrf_token):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
     application = await ApplicationsDAO.get_one(id=application_id)
     if not application:
         raise HTTPException(status_code=404, detail="Page not found")

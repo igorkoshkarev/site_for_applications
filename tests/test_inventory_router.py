@@ -9,38 +9,37 @@ from tests.conftest import make_request
 
 
 def test_equip_inventory_item_updates_status(monkeypatch):
-    # Подмена update_one для проверки, какой статус записывается в БД.
     async def fake_update_one(_id, **kwargs):
         assert kwargs["status"] == ToolStatus.used
 
     monkeypatch.setattr(inv_router.DAOTool, "update_one", fake_update_one)
-    response = asyncio.run(inv_router.equip_inventory_item("INV-1"))
+    monkeypatch.setattr(inv_router, "verify_csrf_token", lambda *_: True)
+    request = make_request(path="/inventory/item/INV-1/equip")
+    response = asyncio.run(inv_router.equip_inventory_item(request, "INV-1", "csrf-ok"))
 
-    # После успешного действия должен быть редирект в список инвентаря.
     assert response.status_code == 302
-    # Проверяем установку anti-cache заголовков.
     assert response.headers["cache-control"].startswith("no-cache")
 
 
 def test_put_inventory_item_updates_status(monkeypatch):
-    # Аналогично проверяем возврат инструмента "на склад".
     async def fake_update_one(_id, **kwargs):
         assert kwargs["status"] == ToolStatus.in_storage
 
     monkeypatch.setattr(inv_router.DAOTool, "update_one", fake_update_one)
-    response = asyncio.run(inv_router.put_inventory_item("INV-1"))
+    monkeypatch.setattr(inv_router, "verify_csrf_token", lambda *_: True)
+    request = make_request(path="/inventory/item/INV-1/put")
+    response = asyncio.run(inv_router.put_inventory_item(request, "INV-1", "csrf-ok"))
 
     assert response.status_code == 302
 
 
 def test_create_inventory_raises_when_cabinet_not_found(monkeypatch):
-    # DAO кабинетов возвращает False -> кабинет не существует.
     async def fake_check(**_):
         return False
 
     monkeypatch.setattr(inv_router.DAOCabinet, "check", fake_check)
+    monkeypatch.setattr(inv_router, "verify_csrf_token", lambda *_: True)
 
-    # Минимальная модель payload, поддерживающая доступ к атрибутам и dict(...).
     class Payload:
         inventory_number = "INV-1"
         name = "Ноутбук"
@@ -57,14 +56,12 @@ def test_create_inventory_raises_when_cabinet_not_found(monkeypatch):
 
     request = make_request(path="/inventory/create")
     with pytest.raises(HTTPException) as exc:
-        asyncio.run(inv_router.create_inventory(request, Payload()))
+        asyncio.run(inv_router.create_inventory(request, Payload(), "csrf-ok"))
 
-    # Ожидаем код 401 по текущей бизнес-логике роута.
     assert exc.value.status_code == 401
 
 
 def test_get_inventory_item_404(monkeypatch):
-    # Если DAO не нашел объект, роут должен отдать 404.
     async def fake_get_one(**_):
         return None
 

@@ -24,9 +24,15 @@
                         <strong>№ {{ item.inventory_number }} — {{ item.name }}</strong>
                     </a>
                     {% if st == 'in_storage' %}
-                        <a class="badge open" href="{{ url_for('equip_inventory_item', inventory_number=item.inventory_number) }}">На складе</a>
+                        <form method="post" action="{{ url_for('equip_inventory_item', inventory_number=item.inventory_number) }}" style="margin:0;">
+                            <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
+                            <button class="badge open" type="submit">На складе</button>
+                        </form>
                     {% elif st == 'used' %}
-                        <a class="badge progress" href="{{ url_for('put_inventory_item', inventory_number=item.inventory_number) }}">Используется</a>
+                        <form method="post" action="{{ url_for('put_inventory_item', inventory_number=item.inventory_number) }}" style="margin:0;">
+                            <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
+                            <button class="badge progress" type="submit">Используется</button>
+                        </form>
                     {% else %}
                         <span class="badge closed">{{ item.status }}</span>
                     {% endif %}

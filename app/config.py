@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     MAIL_FROM_NAME: str = "Site For Applications"
     MAIL_STARTTLS: bool = True
     MAIL_SSL_TLS: bool = False
+    COOKIE_SECURE: bool = False
+    COOKIE_SAMESITE: str = "lax"
+    COOKIE_MAX_AGE: int = 60 * 60 * 24 * 30
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )
