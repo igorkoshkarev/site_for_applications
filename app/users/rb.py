@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field, field_validator, EmailStr, model_validator
-from app.schemas import str_search_filter
 import re
+
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
+
+from app.schemas import str_search_filter
 
 
 class UserSearchFilter(BaseModel):
@@ -10,13 +12,13 @@ class UserSearchFilter(BaseModel):
 
 
 class RBRegistration(BaseModel):
-    username: str = Field(..., min_length=1, max_length=30, description='Никнейм пользователя')
-    full_name: str = Field(..., min_length=1, max_length=30, description='Полное имя пользователя')
-    email: EmailStr = Field(..., description='Email пользователя')
-    phone: str = Field(..., description='Рабочий телефон пользователя')
-    cabinet: str|None = Field(..., description='Кабинет пользователя')
-    password: str = Field(..., min_length=8, max_length=30, description='Пароль пользователя')
-    verify_password: str  = Field(..., min_length=8, max_length=30, description='Подтверждение пароля пользователя')
+    username: str = Field(..., min_length=1, max_length=30, description='Username')
+    full_name: str = Field(..., min_length=1, max_length=30, description='Full name')
+    email: EmailStr = Field(..., description='User email')
+    phone: str = Field(..., description='Work phone')
+    cabinet: str | None = Field(..., description='User cabinet')
+    password: str = Field(..., min_length=8, max_length=30, description='User password')
+    verify_password: str = Field(..., min_length=8, max_length=30, description='Password confirmation')
 
     @field_validator('phone')
     @classmethod
@@ -24,27 +26,26 @@ class RBRegistration(BaseModel):
         re_pattern = r'[\+]?[\d]{7,11}'
         if re.match(re_pattern, phone):
             return phone
-        raise ValueError('Вы неправильно ввели телефон.')
-    
+        raise ValueError('Invalid phone number format')
+
     @field_validator('password')
+    @classmethod
     def validate_password(cls, password: str) -> str:
-        if not(s.isalhpa() for s in password):
-            raise ValueError('Пароль не содержит буквенных символов')
+        if not any(s.isalpha() for s in password):
+            raise ValueError('Password must contain letters')
         if not any(s.isupper() for s in password):
-            raise ValueError('Пароль не имеет большую букву')
+            raise ValueError('Password must contain an uppercase letter')
         if not any(s.isdigit() for s in password):
-            raise ValueError('Пароль не содержит цифр')
+            raise ValueError('Password must contain digits')
         return password
 
     @model_validator(mode='after')
-    def validate_password(self):
+    def validate_password_match(self):
         if self.password != self.verify_password:
-            raise ValueError('Пароли не совпадают')
-        
+            raise ValueError('Passwords do not match')
         return self
 
 
-
 class RBLogin(BaseModel):
-    username: str = Field(..., min_length=1, max_length=30, description='Никнейм пользователя')
-    password: str = Field(..., min_length=8, max_length=30, description='Пароль пользователя')
+    username: str = Field(..., min_length=1, max_length=30, description='Username')
+    password: str = Field(..., min_length=8, max_length=30, description='User password')

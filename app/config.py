@@ -13,6 +13,14 @@ class Settings(BaseSettings):
     ADMIN_LOGIN: str
     ADMIN_PASSWORD: str
     ADMIN_SECRET_KEY: str
+    MAIL_USERNAME: str | None = None
+    MAIL_PASSWORD: str | None = None
+    MAIL_FROM: str | None = None
+    MAIL_PORT: int = 587
+    MAIL_SERVER: str | None = None
+    MAIL_FROM_NAME: str = "Site For Applications"
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )

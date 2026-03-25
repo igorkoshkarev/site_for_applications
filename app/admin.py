@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from crudadmin import CRUDAdmin
 
 from app.config import settings
+from app.mail import start_mail_worker, stop_mail_worker
 from app.users.models import User, Role
 from app.users.rb import RBRegistration
 from app.database import get_session
@@ -23,4 +24,8 @@ admin = CRUDAdmin(
 async def lifespan(app: FastAPI):
     # Initialize admin interface
     await admin.initialize()
-    yield
+    start_mail_worker()
+    try:
+        yield
+    finally:
+        await stop_mail_worker()
