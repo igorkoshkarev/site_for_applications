@@ -52,7 +52,11 @@ async def create_application_page(request: Request):
 @router.post("/create", summary="Create application")
 async def create_application(request: Request, application_info: Annotated[CreateApplicationRB, Form()]):
     user_id = get_user_id_from_cookies(request)
-    await ApplicationsDAO.create(user_id=user_id, **dict(application_info))
+    await ApplicationsDAO.create(
+        user_id=user_id,
+        status=ApplicationStatus.is_open,
+        **dict(application_info),
+    )
     return RedirectResponse("/applications", status_code=301)
 
 

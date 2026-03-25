@@ -1,7 +1,8 @@
-<div class="navbar">
-    <a href="{{ url_for('main_page') }}" class="nav-link">Главная</a>
-    <a href="{{ url_for('get_applications') }}" class="nav-link">Заявки</a>
-    <a href="{{ url_for('get_all_inventory') }}" class="nav-link">Инвентарь</a>
-    <a href="{{ url_for('get_all_users') }}" class="nav-link active">Пользователи</a>
-    <a href="{{ url_for('foreign_account', user_id=user.id) }}" class="nav-link active"><span class="account">Аккаунт: {{ user.username }}</span></a>
+﻿<div class="topbar">
+    <a href="{{ url_for('main_page') }}">Главная</a>
+    <a href="{{ url_for('get_applications') }}">Заявки</a>
+    <a href="{{ url_for('get_all_inventory') }}">Инвентарь</a>
+    <a href="{{ url_for('get_all_users') }}">Пользователи</a>
+    <a href="{{ url_for('foreign_account', user_id=user.id) }}" class="account-pill">Аккаунт: {{ user.username }}</a>
+    <a href="{{ url_for('logout_user') }}">Выйти</a>
 </div>

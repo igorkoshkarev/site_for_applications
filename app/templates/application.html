@@ -1,158 +1,56 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заявка №{{ application.id }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: #f0f4f8;
-            padding: 30px;
-        }
-
-        .app {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .navbar {
-            display: flex;
-            gap: 32px;
-            background: white;
-            padding: 16px 30px;
-            border-radius: 50px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .nav-link {
-            color: #4a5568;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .account {
-            margin-left: auto;
-            background: #667eea;
-            color: white;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .ticket-detail-card {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        }
-
-        .status-badge {
-            display: inline-block;
-            background: #c6f6d5;
-            color: #22543d;
-            padding: 8px 22px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        h2 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 16px;
-        }
-
-        .description {
-            background: #f8fafc;
-            padding: 24px;
-            border-radius: 20px;
-            color: #2d3748;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            font-size: 16px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            background: #fafbff;
-            padding: 24px;
-            border-radius: 20px;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-label {
-            font-size: 14px;
-            color: #718096;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2d3748;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', path='site.css') }}">
 </head>
 <body>
-    <div class="app">
+    <main class="page stack">
         {% include "header.html" %}
 
-        <div class="ticket-detail-card">
-            <span class="status-badge">Статус: {{ application.status }}</span>
-
-            <h2>Тема: {{ application.title }}</h2>
-
-            <div class="description">
-                <strong>Описание:</strong> {{ application.description }}
+        <section class="card stack">
+            {% set st_raw = application.status.value if application.status.value is defined else application.status %}
+            {% set st = (st_raw|string).split('.')[-1] %}
+            <div class="row">
+                <h1>Заявка №{{ application.id }}</h1>
+                {% if st in ['is_open', '1'] %}
+                    <a class="btn primary" href="{{ url_for('accept_application', application_id=application.id) }}">Взять в исполнение</a>
+                {% endif %}
+                {% if st in ['in_process', '2'] %}
+                    <a class="btn primary" href="{{ url_for('close_application', application_id=application.id) }}">Закрыть заявку</a>
+                {% endif %}
             </div>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">Кабинет</span>
-                    <span class="info-value">112</span>
+            <div class="row">
+                {% if st in ['is_open', '1'] %}
+                    <span class="badge open">Открыта</span>
+                {% elif st in ['in_process', '2'] %}
+                    <span class="badge progress">В работе</span>
+                {% else %}
+                    <span class="badge closed">Закрыта</span>
+                {% endif %}
+            </div>
+
+            <div class="stack">
+                <h3>{{ application.title }}</h3>
+                <p>{{ application.description }}</p>
+            </div>
+
+            <div class="grid cols-2">
+                <div class="card stack">
+                    <span class="muted">Заявитель</span>
+                    <strong>{{ application.user.username }}</strong>
                 </div>
-                <div class="info-item">
-                    <span class="info-label">Заявитель</span>
-                    <span class="info-value">{{ application.user.username }}</span>
+                <div class="card stack">
+                    <span class="muted">Кабинет</span>
+                    <strong>{{ application.user.cabinet }}</strong>
                 </div>
             </div>
-            {% if application.status == ApplicationStatus.is_open %}
-            <a href="{{ url_for('accept_application', application_id=application.id) }}">
-                <button>
-                    Взять на исполнение
-                </button>
-            </a>
-            {% endif %}
-            {% if application.status == ApplicationStatus.in_process %}
-            <a href="{{ url_for('close_application', application_id=application.id) }}">
-                <button>
-                    Закрыть заявку
-                </button>
-            </a>
-            {% endif %}
-        </div>
-    </div>
+
+            <a class="btn ghost" href="{{ url_for('get_applications') }}">← К списку заявок</a>
+        </section>
+    </main>
 </body>
 </html>

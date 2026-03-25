@@ -1,498 +1,57 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список пользователей</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        body {
-            background: #f0f4f8;
-            padding: 30px;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        .app {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .navbar {
-            display: flex;
-            gap: 32px;
-            background: white;
-            padding: 16px 30px;
-            border-radius: 50px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .nav-link {
-            color: #4a5568;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: #667eea;
-        }
-
-        .account {
-            margin-left: auto;
-            background: #667eea;
-            color: white;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 600;
-            color: #1a202c;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
-        }
-
-        .btn-primary:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .search-section {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 2;
-            min-width: 250px;
-            padding: 14px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
-        }
-
-        .filter-select {
-            flex: 1;
-            min-width: 150px;
-            padding: 14px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            font-size: 16px;
-            background: white;
-            cursor: pointer;
-        }
-
-        .btn-search {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .users-list {
-            background: white;
-            border-radius: 30px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #edf2f7;
-        }
-
-        .list-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .user-count {
-            background: #e6e9ff;
-            color: #667eea;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .user-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid #edf2f7;
-            transition: background 0.2s;
-            border-radius: 16px;
-            cursor: pointer;
-        }
-
-        .user-item:hover {
-            background: #f7fafc;
-        }
-
-        .user-avatar {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 18px;
-            margin-right: 16px;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 4px;
-        }
-
-        .user-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 14px;
-            color: #718096;
-            flex-wrap: wrap;
-        }
-
-        .user-role {
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .role-admin {
-            background: #fefcbf;
-            color: #744210;
-        }
-
-        .role-user {
-            background: #e6e9ff;
-            color: #667eea;
-        }
-
-        .role-manager {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .role-tech {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .role-doctor {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: #a0aec0;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: 0.2s;
-        }
-
-        .action-btn:hover {
-            color: #667eea;
-            background: #edf2f7;
-        }
-
-        .pagination {
-            margin-top: 30px;
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-
-        .page-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 30px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .page-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .page-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-    </style>
+    <title>Пользователи</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='site.css') }}">
 </head>
 <body>
-    <div class="app">
+    <main class="page stack">
         {% include "header.html" %}
 
-        <!-- <div class="page-header">
-            <h1>Список пользователей</h1>
-            <button class="btn-primary">+ Новый пользователь</button>
-        </div> -->
+        <section class="card stack">
+            <div class="row">
+                <h1>Пользователи</h1>
+                <a class="btn primary" href="{{ url_for('registration_page') }}">+ Новый пользователь</a>
+            </div>
 
-        <div class="search-section">
-            <form method="GET" action="{{ url_for('get_all_users').include_query_params(limit=pagination.limit, page=pagination.next_page) }}">
-            <input type="text" name="name" class="search-input" placeholder="Поиск по имени или email...">
-            <select class="filter-select" name="role_name">
-                <option value={{ None }}>Все роли</option>
-                {% for role in roles %}
-                    <option value={{ role.role }}>{{ role.russian_name }}</option>
-                {% endfor %}
-            </select>
-            <select class="filter-select" name="cabinet">
-                <option value={{ None }}>Все кабинеты</option>
-                {% for cabinet in cabinets %}
-                    <option value={{ cabinet.name }}>{{ cabinet.name }}</option>
-                {% endfor %}
-            </select>
-            <button type='submit' class="btn-search">Найти</button>
+            <form class="grid cols-2" method="GET" action="{{ url_for('get_all_users').include_query_params(limit=pagination.limit, page=pagination.next_page) }}">
+                <input type="text" name="name" placeholder="Имя или email">
+                <select name="role_name">
+                    <option value="">Все роли</option>
+                    {% for role in roles %}
+                        <option value="{{ role.role }}">{{ role.russian_name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="cabinet">
+                    <option value="">Все кабинеты</option>
+                    {% for cabinet in cabinets %}
+                        <option value="{{ cabinet.name }}">{{ cabinet.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="row" style="justify-content:flex-end;">
+                    <a class="btn ghost" href="{{ url_for('get_all_users') }}">Сбросить</a>
+                    <button class="btn primary" type="submit">Найти</button>
+                </div>
             </form>
-            <a href="{{ url_for('get_all_users') }}"><button class="btn-search">Сбросить</button></a>
-        </div>
 
-        <div class="users-list">
-            <div class="list-header">
-                <span class="list-title">Все сотрудники</span>
-                <span class="user-count">{{ pagination.total }} пользовател{{ 'ь' if pagination.total == 1 else 'ля' if 2 < pagination.total % 10 < 4 and pagination.total % 100 // 10 != 1 else 'ей' }}</span>
+            <div class="stack">
+                {% for user in users %}
+                <a class="list-link" href="{{ url_for('foreign_account', user_id=user.id) }}">
+                    <div class="list-item row">
+                        <div class="stack" style="gap:4px;">
+                            <strong>{{ user.full_name }}</strong>
+                            <span class="muted">{{ user.username }} • {{ user.email }} • {{ user.cabinet }}</span>
+                        </div>
+                        <span class="badge open">{{ user.role.russian_name }}</span>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
 
-            {% for user in users %}
-            <a href="{{ url_for('foreign_account', user_id=user.id) }}">
-            <div class="user-item">
-                <div class="user-avatar">{{ user.username[0].upper() }}</div>
-                <div class="user-info">
-                    <div class="user-name">{{ user.full_name }}</div>
-                    <div class="user-meta">
-                        <span>📧 {{ user.email }}</span>
-                        <span>🏢 {{ user.cabinet }}</span>
-                        <span>📱 {{ user.phone }}</span>
-                        <span>🏢 {{ user.role.russian_name }}</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role {{ user.role.css_style_class }}">{{ user.role.russian_name }}</span>
-                    <div class="user-actions">
-                        <!--<a href="url_for('') "></a><button class="action-btn">✏️</button></a>-->
-                        <!--<button class="action-btn">👤</button> -->
-                        <!-- <a><button class="action-btn">⋯</button></a> -->
-                    </div>
-                </div>
-            </div></a>
-
-            {% endfor %}
-            <!-- Администратор
-            <div class="user-item">
-                <div class="user-avatar">А</div>
-                <div class="user-info">
-                    <div class="user-name">Алексеев Алексей Алексеевич</div>
-                    <div class="user-meta">
-                        <span>📧 a.alekseev@company.ru</span>
-                        <span>🏢 Каб. 101</span>
-                        <span>📱 +7 (999) 123-45-67</span>
-                        <span>🏢 Системный администратор</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role role-admin">Администратор</span>
-                    <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="user-item">
-                <div class="user-avatar">И</div>
-                <div class="user-info">
-                    <div class="user-name">Иванова Ирина Ивановна</div>
-                    <div class="user-meta">
-                        <span>📧 i.ivanova@company.ru</span>
-                        <span>🏢 Каб. 111</span>
-                        <span>📱 +7 (999) 234-56-78</span>
-                        <span>🏢 Бухгалтер</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role role-user">Пользователь</span>
-                    <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="user-item">
-                <div class="user-avatar">П</div>
-                <div class="user-info">
-                    <div class="user-name">Петров Петр Петрович</div>
-                    <div class="user-meta">
-                        <span>📧 p.petrov@company.ru</span>
-                        <span>🏢 Каб. 112</span>
-                        <span>📱 +7 (999) 345-67-89</span>
-                        <span>🏢 Менеджер</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role role-manager">Менеджер</span>
-                    <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="user-item">
-                <div class="user-avatar">С</div>
-                <div class="user-info">
-                    <div class="user-name">Сидорова Светлана Сергеевна</div>
-                    <div class="user-meta">
-                        <span>📧 s.sidorova@company.ru</span>
-                        <span>🏢 Каб. 113</span>
-                        <span>📱 +7 (999) 456-78-90</span>
-                        <span>🏢 HR-специалист</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role role-user">Пользователь</span>
-                    <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="user-item">
-                <div class="user-avatar">К</div>
-                <div class="user-info">
-                    <div class="user-name">Козлов Константин Константинович</div>
-                    <div class="user-meta">
-                        <span>📧 k.kozlov@company.ru</span>
-                        <span>🏢 Каб. 114</span>
-                        <span>📱 +7 (999) 567-89-01</span>
-                        <span>🏢 Технический директор</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role role-tech">Тех. специалист</span>
-                    <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="user-item">
-                <div class="user-avatar">Н</div>
-                <div class="user-info">
-                    <div class="user-name">Николаева Наталья Николаевна</div>
-                    <div class="user-meta">
-                        <span>📧 n.nikolaeva@company.ru</span>
-                        <span>🏢 Каб. 115</span>
-                        <span>📱 +7 (999) 678-90-12</span>
-                        <span>🏢 Секретарь</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-role role-user">Пользователь</span>
-                    <div class="user-actions">
-                        <button class="action-btn">✏️</button>
-                        <button class="action-btn">👤</button>
-                        <button class="action-btn">⋯</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-        {% include "pagination.html" %}
-    </div>
+            {% include "pagination.html" %}
+        </section>
+    </main>
 </body>
 </html>

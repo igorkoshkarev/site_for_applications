@@ -93,6 +93,13 @@ async def login_user(response: Response, user_info: Annotated[RBLogin, Form()]):
     raise HTTPException(status_code=401, detail='Invalid username or password')
 
 
+@router.get('/logout', summary='Logout user')
+async def logout_user():
+    response = RedirectResponse('/users/login', status_code=302)
+    response.delete_cookie('users_access_token')
+    return response
+
+
 @router.get('/{user_id}', summary='User profile')
 async def foreign_account(request: Request, user_id: int):
     user = await DAOUser.get_one(id=user_id)

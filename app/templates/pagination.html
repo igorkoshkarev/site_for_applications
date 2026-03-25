@@ -1,12 +1,14 @@
+﻿{% if pagination.has_prev %}
 <div class="pagination">
-    <a href="{{ request.url.include_query_params(limit=pagination.limit, page=pagination.prev_page) }}">
-        <button class="page-btn">←</button>
-    </a>
-            <!-- <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">4</button> -->
-    <a href="{{ request.url.include_query_params(limit=pagination.limit, page=pagination.next_page) }}">
-        <button class="page-btn">→</button>
-    </a>
+    <a class="btn ghost" href="{{ request.url.include_query_params(limit=pagination.limit, page=pagination.prev_page) }}">← Назад</a>
+{% else %}
+<div class="pagination">
+    <span class="btn ghost" style="opacity:.5; pointer-events:none;">← Назад</span>
+{% endif %}
+
+{% if pagination.has_next %}
+    <a class="btn ghost" href="{{ request.url.include_query_params(limit=pagination.limit, page=pagination.next_page) }}">Вперед →</a>
+{% else %}
+    <span class="btn ghost" style="opacity:.5; pointer-events:none;">Вперед →</span>
+{% endif %}
 </div>

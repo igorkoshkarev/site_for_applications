@@ -1,14 +1,14 @@
 import app.database as database
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import Text, ForeignKey
-from enum import Enum, auto
+from enum import Enum
 
 
 class ApplicationStatus(str, Enum):
-    is_open: str = auto()
-    in_process: str = auto()
-    is_closed: str = auto()
-    is_confirmed: str = auto()
+    is_open = "is_open"
+    in_process = "in_process"
+    is_closed = "is_closed"
+    is_confirmed = "is_confirmed"
 
 
 class Application(database.Base):

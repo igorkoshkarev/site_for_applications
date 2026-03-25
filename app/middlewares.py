@@ -9,9 +9,14 @@ import re
 class CheckLoginMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
-        deny_redirect = [request.url_for('login_page'), request.url_for('registration_page')]
+        public_path_prefixes = (
+            "/users/login",
+            "/users/registration",
+            "/static/",
+            "/favicon.ico",
+        )
 
-        if not get_user_token(request) and request.url not in deny_redirect:
+        if not get_user_token(request) and not request.url.path.startswith(public_path_prefixes):
             return RedirectResponse('/users/login', status_code=302)
         
         response = await call_next(request)
