@@ -40,23 +40,18 @@ def test_create_inventory_raises_when_cabinet_not_found(monkeypatch):
     monkeypatch.setattr(inv_router.DAOCabinet, "check", fake_check)
     monkeypatch.setattr(inv_router, "verify_csrf_token", lambda *_: True)
 
-    class Payload:
-        inventory_number = "INV-1"
-        name = "Ноутбук"
-        status = ToolStatus.in_storage
-        cabinet_name = "404"
-
-        def __iter__(self):
-            return iter({
-                "inventory_number": self.inventory_number,
-                "name": self.name,
-                "status": self.status,
-                "cabinet_name": self.cabinet_name,
-            }.items())
-
     request = make_request(path="/inventory/create")
     with pytest.raises(HTTPException) as exc:
-        asyncio.run(inv_router.create_inventory(request, Payload(), "csrf-ok"))
+        asyncio.run(
+            inv_router.create_inventory(
+                request,
+                "INV-1",
+                "Ноутбук",
+                ToolStatus.in_storage,
+                "404",
+                "csrf-ok",
+            )
+        )
 
     assert exc.value.status_code == 401
 

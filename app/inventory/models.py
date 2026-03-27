@@ -1,14 +1,14 @@
 from app.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
-from enum import Enum, auto
+from enum import Enum
 
 
 class ToolStatus(str, Enum):
-    in_storage: str = auto()
-    used: str = auto()
-    broken: str = auto()
-    used_up: str = auto()
+    in_storage = "in_storage"
+    used = "used"
+    broken = "broken"
+    used_up = "used_up"
 
 
 class Tool(Base):

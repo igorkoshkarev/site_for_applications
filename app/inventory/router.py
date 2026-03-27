@@ -90,11 +90,21 @@ async def create_inventory_page(request: Request):
 @router.post('/create', summary='Create inventory item')
 async def create_inventory(
     request: Request,
-    inventory_info: Annotated[CreateInventoryRB, Form()],
+    inventory_number: Annotated[str, Form(min_length=1, max_length=30)],
+    name: Annotated[str, Form(min_length=1, max_length=30)],
+    status: Annotated[ToolStatus, Form()],
+    cabinet_name: Annotated[str, Form()],
     csrf_token: Annotated[str, Form()],
 ):
     if not verify_csrf_token(request, csrf_token):
         raise HTTPException(status_code=403, detail="CSRF validation failed")
+
+    inventory_info = CreateInventoryRB(
+        inventory_number=inventory_number,
+        name=name,
+        status=status,
+        cabinet_name=cabinet_name,
+    )
 
     if not await DAOCabinet.check(name=inventory_info.cabinet_name):
         raise HTTPException(status_code=401, detail='Cabinet not found')

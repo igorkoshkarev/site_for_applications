@@ -18,14 +18,8 @@ def test_create_application_sets_open_status(monkeypatch):
     monkeypatch.setattr(app_router, "verify_csrf_token", lambda *_: True)
     monkeypatch.setattr(app_router.ApplicationsDAO, "create", fake_create)
 
-    class FormModel(dict):
-        def __iter__(self):
-            return iter({"title": "t", "description": "d"}.items())
-
     request = make_request(path="/applications/create")
-    payload = FormModel(title="t", description="d")
-
-    response = asyncio.run(app_router.create_application(request, payload, "csrf-ok"))
+    response = asyncio.run(app_router.create_application(request, "t", "d", "csrf-ok"))
 
     assert response.status_code == 301
     assert called["user_id"] == 11

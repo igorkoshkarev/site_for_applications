@@ -116,7 +116,7 @@ async def login_user(response: Response, user_info: Annotated[RBLogin, Form()]):
             redirect.set_cookie(
                 key='csrf_token',
                 value=csrf_token,
-                httponly=False,
+                httponly=True,
                 secure=settings.COOKIE_SECURE,
                 samesite=settings.COOKIE_SAMESITE,
                 max_age=settings.COOKIE_MAX_AGE,

@@ -77,13 +77,15 @@ async def create_application_page(request: Request):
 @router.post("/create", summary="Create application")
 async def create_application(
     request: Request,
-    application_info: Annotated[CreateApplicationRB, Form()],
+    title: Annotated[str, Form(min_length=1, max_length=140)],
+    description: Annotated[str, Form(max_length=1000)],
     csrf_token: Annotated[str, Form()],
 ):
     if not verify_csrf_token(request, csrf_token):
         raise HTTPException(status_code=403, detail="CSRF validation failed")
 
     user_id = get_user_id_from_cookies(request)
+    application_info = CreateApplicationRB(title=title, description=description)
     await ApplicationsDAO.create(
         user_id=user_id,
         status=ApplicationStatus.is_open,
@@ -179,7 +181,7 @@ async def close_application(request: Request, application_id: int, csrf_token: A
 async def send_feedback(
     request: Request,
     application_id: int,
-    feedback_info: Annotated[ApplicationFeedbackRB, Form()],
+    feedback: Annotated[str, Form(min_length=3, max_length=2000)],
     csrf_token: Annotated[str, Form()],
 ):
     if not verify_csrf_token(request, csrf_token):
@@ -201,6 +203,7 @@ async def send_feedback(
         raise HTTPException(status_code=400, detail="Performer email is not configured")
 
     applicant_name = request.state.user["full_name"] if request.state.user else None
+    feedback_info = ApplicationFeedbackRB(feedback=feedback)
     enqueue_application_feedback_email(
         email=performer.email,
         application_id=application["id"],
