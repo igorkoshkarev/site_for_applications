@@ -10,7 +10,6 @@ from app.admin import admin, lifespan
 
 
 main = FastAPI(lifespan=lifespan)
-main.add_middleware(middleware.SecurityHeadersMiddleware)
 main.add_middleware(middleware.OpenAdminPanelRoleCheckMiddleware)
 main.add_middleware(middleware.ChangeStatusApplicationsRoleCheckMiddleware)
 main.add_middleware(middleware.ChangeStatusInventoryRoleCheckMiddleware)
@@ -18,6 +17,7 @@ main.add_middleware(middleware.AddInventoryRoleCheckMiddleware)
 main.add_middleware(middleware.ShowInventoryRoleCheckMiddleware)
 main.add_middleware(middleware.CheckLoginMiddleware)
 main.add_middleware(middleware.GetUserDataMiddleware)
+main.add_middleware(middleware.SecurityHeadersMiddleware)
 
 
 main.mount('/static', StaticFiles(directory='app/static'), 'static')

@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.requests import Request
 from app.users.auth import get_user_token, get_user_id_from_token
 from app.users.dao import DAOUser
+from app.config import settings
 import re
 
 
@@ -19,8 +20,18 @@ class CheckLoginMiddleware(BaseHTTPMiddleware):
         user_id = get_user_id_from_token(request)
         if not user_id and not request.url.path.startswith(public_path_prefixes):
             response = RedirectResponse('/users/login', status_code=302)
-            response.delete_cookie("users_access_token")
-            response.delete_cookie("csrf_token")
+            response.delete_cookie(
+                "users_access_token",
+                secure=settings.COOKIE_SECURE,
+                httponly=True,
+                samesite=settings.COOKIE_SAMESITE,
+            )
+            response.delete_cookie(
+                "csrf_token",
+                secure=settings.COOKIE_SECURE,
+                httponly=True,
+                samesite=settings.COOKIE_SAMESITE,
+            )
             return response
         
         response = await call_next(request)

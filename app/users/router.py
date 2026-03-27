@@ -132,8 +132,18 @@ async def logout_user(request: Request, csrf_token: Annotated[str, Form()]):
         raise HTTPException(status_code=403, detail="CSRF validation failed")
 
     response = RedirectResponse('/users/login', status_code=302)
-    response.delete_cookie('users_access_token')
-    response.delete_cookie('csrf_token')
+    response.delete_cookie(
+        'users_access_token',
+        secure=settings.COOKIE_SECURE,
+        httponly=True,
+        samesite=settings.COOKIE_SAMESITE,
+    )
+    response.delete_cookie(
+        'csrf_token',
+        secure=settings.COOKIE_SECURE,
+        httponly=True,
+        samesite=settings.COOKIE_SAMESITE,
+    )
     return response
 
 
